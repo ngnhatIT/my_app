@@ -1,18 +1,18 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import App from "../App";
 import Home from "../pages/Home";
-import Settings from "../pages/Settings";
 import Login from "../pages/Login";
 import NotFound from "../pages/NotFound";
-import App from "../App";
-import type { RootState } from "../store";
+import Setting from "../pages/Settings";
+import { type RootState } from "../store";
 
-// Component bảo vệ route
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  console.log(isAuthenticated);
+
+  console.log("ProtectedRoute - isAuthenticated:", isAuthenticated);
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
         path: "settings",
         element: (
           <ProtectedRoute>
-            <Settings />
+            <Setting />
           </ProtectedRoute>
         ),
       },

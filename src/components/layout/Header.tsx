@@ -1,11 +1,11 @@
-import { Layout } from "antd";
-import { Button, Input, Avatar, Typography } from "antd";
-import {
+import { Layout, Button, Input, Avatar, Typography } from "antd";
+import Icon, {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   SettingOutlined,
   UserOutlined,
   LogoutOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,14 +15,14 @@ import { logout } from "../../features/auth/AuthSlice";
 import type { RootState } from "../../store";
 
 const { Text } = Typography;
-const { Header } = Layout;
+const { Header } = Layout; // Lấy Header từ Ant Design Layout
 
 interface HeaderProps {
   colorBgContainer?: string;
 }
 
 const AppHeader: React.FC<HeaderProps> = ({ colorBgContainer = "#fff" }) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(false); // Biến này có vẻ không dùng trong Header này?
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,35 +34,30 @@ const AppHeader: React.FC<HeaderProps> = ({ colorBgContainer = "#fff" }) => {
 
   return (
     <Header
-      className="flex items-center justify-between px-4 py-3 shadow-sm"
+      className="flex items-center px-4 py-3 shadow-sm" // Loại bỏ justify-between ở đây
       style={{ background: colorBgContainer }}
     >
-      <Button
-        type="text"
-        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        onClick={() => setCollapsed(!collapsed)}
-        className="text-xl hover:bg-gray-100 rounded-full p-2"
-      />
-      <div className="flex items-center gap-3 flex-1 mx-4">
-        <Input placeholder="Search..." className="max-w-md" />
+      {/* 1. Phần tử bên trái (có thể là logo/menu toggle) */}
+      <div className="flex items-center flex-1">
+        <Typography.Title level={4} className="m-0 text-gray-800">
+          MVP APP
+        </Typography.Title>
       </div>
-      <div className="flex items-center gap-2">
-        <Text className="text-base">{user?.name || "Guest"}</Text>
-        <Button
-          type="text"
-          icon={<SettingOutlined className="text-base" />}
-          iconPosition="end"
-          className="text-base hover:bg-gray-100 rounded-full p-2"
-        />
-        <Avatar className="ml-2" icon={<UserOutlined />} size="large" />
-        {user && (
-          <Button
-            type="text"
-            icon={<LogoutOutlined className="text-base" />}
-            onClick={handleLogout}
-            className="text-base hover:bg-gray-100 rounded-full p-2"
-          />
-        )}
+
+      {/* 2. Phần giữa (Input Search) */}
+      <div className="flex-initial mx-4 w-[20rem] flex items-center gap-2">
+        {" "}
+        {/* Hoặc w-[Xrem] */}
+        <Input placeholder="Search..." className="w-full" />
+        <Button type="primary" shape="circle" icon={<SearchOutlined />} />
+      </div>
+
+      {/* 3. Phần tử bên phải (User Info và Logout) */}
+      <div className="flex items-center gap-2 justify-end flex-1">
+        {" "}
+        {/* justify-end để đẩy nội dung về bên phải, flex-1 để nó giãn ra */}
+        <Button type="primary" shape="circle" icon={<SettingOutlined />} />
+        <Avatar className="ml-2" icon={<UserOutlined />} size="default" />
       </div>
     </Header>
   );

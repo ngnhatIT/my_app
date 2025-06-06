@@ -1,10 +1,11 @@
 import { Form, Input, Button, Card, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-
-import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { login } from "../features/auth/AuthSlice";
+import { useNavigate } from "react-router-dom";
+import store, { type RootState } from "../store";
+import { useEffect } from "react";
 
 interface LoginFormValues {
   username: string;
@@ -17,21 +18,12 @@ interface LoginResponse {
 }
 
 const Login: React.FC = () => {
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const onFinish = async (values: LoginFormValues) => {
     try {
-      // const response = await axios.post<LoginResponse>(
-      //   "https://dummyjson.com/auth/login",
-      //   {
-      //     username: values.username,
-      //     password: values.password,
-      //   }
-      // );
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Đợi 0.5 giây
-
-      // Dữ liệu phản hồi giả lập
       const fakeResponseData: LoginResponse = {
         token: "fake_jwt_token_12345",
         user: { name: values.username || "Test User" }, // Tên user có thể lấy từ username đã nhập
@@ -40,7 +32,11 @@ const Login: React.FC = () => {
       const { token, user } = fakeResponseData;
       dispatch(login({ token, user }));
       message.success("Login successful!");
-      navigate("/");
+      console.log("After dispatch(login): isAuthenticated should be true");
+      console.log(
+        "After dispatch(login): isAuthenticated should be true, current state:",
+        store.getState()
+      );
     } catch (error: any) {
       message.error(
         "Login failed: " +
@@ -48,6 +44,14 @@ const Login: React.FC = () => {
       );
     }
   };
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+  if (isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
