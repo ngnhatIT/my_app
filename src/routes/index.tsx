@@ -1,50 +1,37 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import App from "../App";
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import NotFound from "../pages/NotFound";
-import Setting from "../pages/Settings";
-import { type RootState } from "../store";
+import { createBrowserRouter } from "react-router-dom";
+import MainLayout from "../layouts/MainLayout";
+import AuthLayout from "../layouts/AuthLayout";
+import Login from "../pages/Auth/Login";
+import Register from "../pages/Auth/Register";
+import { ProtectedRoute } from "./ProtectedRoute";
+import ForgotPassword from "../pages/Auth/ForgotPassword";
+import ResetPassword from "../pages/Auth/ResetPassword";
+import Dashboard from "../pages/Dashboard/Dashboard";
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-
-  console.log("ProtectedRoute - isAuthenticated:", isAuthenticated);
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
-};
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <MainLayout />,
     children: [
       {
         index: true,
         element: (
           <ProtectedRoute>
-            <Home />
+            <Dashboard />
           </ProtectedRoute>
         ),
       },
-      {
-        path: "settings",
-        element: (
-          <ProtectedRoute>
-            <Setting />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "*",
-        element: <NotFound />,
-      },
+    ],
+  },
+  {
+    path: "/auth",
+    element: <AuthLayout />,
+    children: [
+      { path: "login", element: <Login /> },
+      { path: "register", element: <Register /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
+      { path: "reset-password", element: <ResetPassword /> },
     ],
   },
 ]);

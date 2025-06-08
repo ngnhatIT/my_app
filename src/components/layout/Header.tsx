@@ -1,64 +1,38 @@
-import { Layout, Button, Input, Avatar, Typography } from "antd";
-import Icon, {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  SettingOutlined,
-  UserOutlined,
-  LogoutOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-
-import { logout } from "../../features/auth/AuthSlice";
+import { Layout, Avatar, Dropdown, Menu, Typography } from "antd";
+import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store";
+import { logout } from "../../features/auth/AuthSlice";
 
-const { Text } = Typography;
-const { Header } = Layout; // Lấy Header từ Ant Design Layout
 
-interface HeaderProps {
-  colorBgContainer?: string;
-}
+const { Header } = Layout;
 
-const AppHeader: React.FC<HeaderProps> = ({ colorBgContainer = "#fff" }) => {
-  const [collapsed, setCollapsed] = useState(false); // Biến này có vẻ không dùng trong Header này?
-  const { user } = useSelector((state: RootState) => state.auth);
+const AppHeader = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/login");
   };
 
+  const menu = (
+    <Menu>
+      <Menu.Item key="logout" onClick={handleLogout}>
+        Đăng xuất
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
-    <Header
-      className="flex items-center px-4 py-3 shadow-sm" // Loại bỏ justify-between ở đây
-      style={{ background: colorBgContainer }}
-    >
-      {/* 1. Phần tử bên trái (có thể là logo/menu toggle) */}
-      <div className="flex items-center flex-1">
-        <Typography.Title level={4} className="m-0 text-gray-800">
-          MVP APP
-        </Typography.Title>
-      </div>
-
-      {/* 2. Phần giữa (Input Search) */}
-      <div className="flex-initial mx-4 w-[20rem] flex items-center gap-2">
-        {" "}
-        {/* Hoặc w-[Xrem] */}
-        <Input placeholder="Search..." className="w-full" />
-        <Button type="primary" shape="circle" icon={<SearchOutlined />} />
-      </div>
-
-      {/* 3. Phần tử bên phải (User Info và Logout) */}
-      <div className="flex items-center gap-2 justify-end flex-1">
-        {" "}
-        {/* justify-end để đẩy nội dung về bên phải, flex-1 để nó giãn ra */}
-        <Button type="primary" shape="circle" icon={<SettingOutlined />} />
-        <Avatar className="ml-2" icon={<UserOutlined />} size="default" />
-      </div>
+    <Header className="bg-white dark:bg-gray-800 px-4 flex items-center justify-between shadow-sm">
+      <Typography.Title level={4} className="!mb-0 !text-blue-600">
+        Quản trị hệ thống
+      </Typography.Title>
+      <Dropdown overlay={menu} placement="bottomRight">
+        <div className="flex items-center gap-2 cursor-pointer">
+          <Avatar>{user?.username?.[0]?.toUpperCase()}</Avatar>
+          <span className="text-sm text-gray-700 dark:text-gray-200">{user?.username}</span>
+        </div>
+      </Dropdown>
     </Header>
   );
 };

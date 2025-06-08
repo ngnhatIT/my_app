@@ -1,0 +1,9 @@
+{
+  "login": {
+    "title": "Login to the System",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Login",
+    "error": "Invalid username or password!"
+  }
+}
