@@ -1,9 +1,22 @@
-import { Outlet } from "react-router-dom";
+// src/layouts/AuthLayout.tsx
+import { Outlet, useNavigate } from "react-router-dom";
 import { Select } from "antd";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import type { RootState } from "../store";
+
 
 const AuthLayout = () => {
   const { i18n } = useTranslation();
+  const navigate = useNavigate();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 dark:bg-gray-900">
