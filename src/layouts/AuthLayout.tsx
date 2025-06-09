@@ -6,11 +6,12 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import type { RootState } from "../store";
 
-
 const AuthLayout = () => {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
 
   useEffect(() => {
     if (isAuthenticated) {

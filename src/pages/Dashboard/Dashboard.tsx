@@ -26,21 +26,21 @@ const Dashboard: React.FC = () => {
 
       <Row gutter={[16, 16]} className="flex-1">
         <Col xs={24} md={12} lg={8}>
-          <Card bordered hoverable className="shadow-md h-full" style={cardStyle}>
+          <Card variant="outlined" hoverable className="shadow-md h-full" style={cardStyle}>
             <Text strong style={{ color: cardStyle.color }}>{t("dashboard.stats.users")}</Text>
             <div className="text-2xl mt-2" style={{ color: cardStyle.color }}>42</div>
           </Card>
         </Col>
 
         <Col xs={24} md={12} lg={8}>
-          <Card bordered hoverable className="shadow-md h-full" style={cardStyle}>
+          <Card variant="outlined" hoverable className="shadow-md h-full" style={cardStyle}>
             <Text strong style={{ color: cardStyle.color }}>{t("dashboard.stats.workspaces")}</Text>
             <div className="text-2xl mt-2" style={{ color: cardStyle.color }}>7</div>
           </Card>
         </Col>
 
         <Col xs={24} md={12} lg={8}>
-          <Card bordered hoverable className="shadow-md h-full" style={cardStyle}>
+          <Card variant="outlined" hoverable className="shadow-md h-full" style={cardStyle}>
             <Text strong style={{ color: cardStyle.color }}>{t("dashboard.stats.sheets")}</Text>
             <div className="text-2xl mt-2" style={{ color: cardStyle.color }}>128</div>
           </Card>

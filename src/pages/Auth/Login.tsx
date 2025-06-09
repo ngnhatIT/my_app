@@ -1,4 +1,4 @@
-import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Typography, message } from "antd";
 import { useDispatch } from "react-redux";
 
@@ -13,12 +13,18 @@ const Login = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const handleLogin = (values: { email: string; username: string; password: string }) => {
-    dispatch(loginSuccess({
-      id: "1",
-      username: values.username,
-      email: values.email,
-    }));
+  const handleLogin = (values: {
+    email: string;
+    username: string;
+    password: string;
+  }) => {
+    dispatch(
+      loginSuccess({
+        id: "1",
+        username: values.username,
+        email: "",
+      })
+    );
     message.success(t("login.success"));
     navigate("/");
   };
@@ -34,14 +40,7 @@ const Login = () => {
           label={t("login.username")}
           rules={[{ required: true, message: t("login.username_required") }]}
         >
-          <Input prefix={<UserOutlined />} placeholder="johndoe" />
-        </Form.Item>
-        <Form.Item
-          name="email"
-          label="Email"
-          rules={[{ required: true, message: t("login.email_required"), type: "email" }]}
-        >
-          <Input prefix={<MailOutlined />} placeholder="you@example.com" />
+          <Input prefix={<UserOutlined />} placeholder={t("login.username")} />
         </Form.Item>
         <Form.Item
           name="password"
@@ -56,8 +55,12 @@ const Login = () => {
           </Button>
         </Form.Item>
         <div className="flex justify-between mt-2">
-          <Button type="link" onClick={() => navigate("/auth/register")}>{t("login.register")}</Button>
-          <Button type="link" onClick={() => navigate("/auth/forgot-password")}>{t("login.forgot")}</Button>
+          <Button type="link" onClick={() => navigate("/auth/register")}>
+            {t("login.register")}
+          </Button>
+          <Button type="link" onClick={() => navigate("/auth/forgot-password")}>
+            {t("login.forgot")}
+          </Button>
         </div>
       </Form>
     </div>
