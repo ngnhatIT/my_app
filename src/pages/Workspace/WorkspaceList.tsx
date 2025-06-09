@@ -1,4 +1,4 @@
-import { Table, Button, Space, Typography, Modal, message, Input } from "antd";
+import { Table, Button, Space, Typography, Input } from "antd"; // Loại Outlet khỏi antd
 import { useState } from "react";
 import {
   EditOutlined,
@@ -6,7 +6,7 @@ import {
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Outlet, useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom"; // Import Outlet từ react-router-dom
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -50,17 +50,8 @@ const WorkspaceList: React.FC = () => {
   };
 
   const handleChangePassword = (record: Workspace) => {
-    Modal.confirm({
-      title: `Đổi mật khẩu cho ${record.name}`,
-      content: "Bạn có chắc muốn đổi mật khẩu?",
-      onOk: () => {
-        navigate(`/workspaces/${record.id}/change-password`);
-      },
-      onCancel: () => {},
-      style: { top: 20 },
-      okText: "Xác nhận",
-      cancelText: "Hủy",
-    });
+    console.log("Navigating to change password for ID:", record.id); // Debug log
+    navigate(`/workspaces/${record.id}/change-password`);
   };
 
   const handleSearch = (value: string) => {
@@ -81,26 +72,20 @@ const WorkspaceList: React.FC = () => {
       dataIndex: "name",
       key: "name",
       render: (text: string) => (
-        <span className="font-medium text-gray-800 dark:text-gray-200">
-          {text}
-        </span>
+        <span className="font-medium text-gray-800">{text}</span>
       ),
     },
     {
       title: "Người tạo",
       dataIndex: "owner",
       key: "owner",
-      render: (text: string) => (
-        <span className="text-gray-600 dark:text-gray-400">{text}</span>
-      ),
+      render: (text: string) => <span className="text-gray-600 ">{text}</span>,
     },
     {
       title: "Ngày tạo",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (text: string) => (
-        <span className="text-gray-600 dark:text-gray-400">{text}</span>
-      ),
+      render: (text: string) => <span className="text-gray-600">{text}</span>,
     },
     {
       title: "Thao tác",
@@ -110,7 +95,7 @@ const WorkspaceList: React.FC = () => {
           <Button
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
-            className="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="bg-gray-100 text-gray-800 hover:bg-gray-200 "
             style={{ border: "none" }}
           >
             Sửa
@@ -118,7 +103,7 @@ const WorkspaceList: React.FC = () => {
           <Button
             icon={<KeyOutlined />}
             onClick={() => handleChangePassword(record)}
-            className="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="bg-gray-100 text-gray-800 hover:bg-gray-200 "
             style={{ border: "none" }}
           >
             Đổi mật khẩu
@@ -129,9 +114,9 @@ const WorkspaceList: React.FC = () => {
   ];
 
   return (
-    <div className="h-full flex flex-col p-6 bg-white dark:bg-gray-900">
+    <div className="h-full flex flex-col p-6 bg-white ">
       <div className="flex justify-between items-center mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
-        <Title level={3} className="!mb-0 text-gray-900 dark:text-gray-100">
+        <Title level={3} className="!mb-0 text-gray-900">
           Quản lý Workspace
         </Title>
         <div className="flex items-center gap-4">
@@ -165,9 +150,9 @@ const WorkspaceList: React.FC = () => {
           className="custom-table"
           style={{ margin: 0, padding: 0 }}
         />
-        <Outlet />{" "}
-        {/* Đảm bảo render route con như /workspaces/:workspaceId/change-password */}
       </div>
+      <Outlet />{" "}
+      {/* Đặt <Outlet /> ở đây để render route con như /workspaces/:workspaceId/change-password */}
     </div>
   );
 };

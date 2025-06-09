@@ -7,26 +7,68 @@ interface Permission {
   id: number;
   role: string;
   menu: string;
-  access: boolean;
+  create: boolean;
+  read: boolean;
+  update: boolean;
+  delete: boolean;
 }
 
 const mockData: Permission[] = [
-  { id: 1, role: "Admin", menu: "Dashboard", access: true },
-  { id: 2, role: "Admin", menu: "Users", access: true },
-  { id: 3, role: "Moderator", menu: "Users", access: false },
-  { id: 4, role: "User", menu: "Profile", access: true },
+  {
+    id: 1,
+    role: "Admin",
+    menu: "Dashboard",
+    create: true,
+    read: true,
+    update: true,
+    delete: true,
+  },
+  {
+    id: 2,
+    role: "Admin",
+    menu: "Users",
+    create: true,
+    read: true,
+    update: true,
+    delete: true,
+  },
+  {
+    id: 3,
+    role: "Owner",
+    menu: "Users",
+    create: false,
+    read: true,
+    update: false,
+    delete: false,
+  },
+  {
+    id: 4,
+    role: "User",
+    menu: "Profile",
+    create: false,
+    read: true,
+    update: true,
+    delete: false,
+  },
 ];
 
 const PermissionManagement: React.FC = () => {
   const [data, setData] = useState<Permission[]>(mockData);
 
-  const handleToggleAccess = (id: number) => {
+  const handleTogglePermission = (
+    id: number,
+    field: keyof Omit<Permission, "id" | "role" | "menu">
+  ) => {
     setData(
       data.map((item) =>
-        item.id === id ? { ...item, access: !item.access } : item
+        item.id === id ? { ...item, [field]: !item[field] } : item
       )
     );
-    message.success("Quyền truy cập đã được cập nhật!");
+    message.success(
+      `Quyền "${field}" đã được cập nhật cho vai trò ${
+        data.find((item) => item.id === id)?.role
+      }!`
+    );
   };
 
   const columns = [
@@ -34,12 +76,42 @@ const PermissionManagement: React.FC = () => {
     { title: "Vai trò", dataIndex: "role", key: "role" },
     { title: "Menu", dataIndex: "menu", key: "menu" },
     {
-      title: "Truy cập",
-      key: "access",
+      title: "Tạo",
+      key: "create",
       render: (_: any, record: Permission) => (
         <Checkbox
-          checked={record.access}
-          onChange={() => handleToggleAccess(record.id)}
+          checked={record.create}
+          onChange={() => handleTogglePermission(record.id, "create")}
+        />
+      ),
+    },
+    {
+      title: "Xem",
+      key: "read",
+      render: (_: any, record: Permission) => (
+        <Checkbox
+          checked={record.read}
+          onChange={() => handleTogglePermission(record.id, "read")}
+        />
+      ),
+    },
+    {
+      title: "Sửa",
+      key: "update",
+      render: (_: any, record: Permission) => (
+        <Checkbox
+          checked={record.update}
+          onChange={() => handleTogglePermission(record.id, "update")}
+        />
+      ),
+    },
+    {
+      title: "Xóa",
+      key: "delete",
+      render: (_: any, record: Permission) => (
+        <Checkbox
+          checked={record.delete}
+          onChange={() => handleTogglePermission(record.id, "delete")}
         />
       ),
     },

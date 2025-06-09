@@ -90,7 +90,7 @@ const WorkspaceForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100 p-4">
+    <div className="min-h-screen flex   bg-gray-100 p-4">
       <Card className="w-full max-w-md shadow-lg rounded-lg p-6 bg-white dark:bg-gray-800">
         <Title
           level={3}

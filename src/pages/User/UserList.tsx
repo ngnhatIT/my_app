@@ -6,7 +6,7 @@ import {
   SearchOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom"; // Thêm Outlet từ react-router-dom
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -152,6 +152,8 @@ const UserList: React.FC = () => {
           style={{ margin: 0, padding: 0 }}
         />
       </div>
+      <Outlet />{" "}
+      {/* Thêm Outlet để render route con như /users/new hoặc /users/:userId/edit */}
     </div>
   );
 };
