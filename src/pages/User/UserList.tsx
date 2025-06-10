@@ -56,27 +56,6 @@ const mockData: User[] = [
     role: "User",
     status: "Inactive",
   },
-  {
-    id: 6,
-    name: "Nguyễn Khánh Nhật",
-    email: "nhat@gmail.com",
-    role: "User",
-    status: "Inactive",
-  },
-  {
-    id: 7,
-    name: "Nguyễn Khánh Nhật",
-    email: "nhat@gmail.com",
-    role: "User",
-    status: "Inactive",
-  },
-  {
-    id: 8,
-    name: "Nguyễn Khánh Nhật",
-    email: "nhat@gmail.com",
-    role: "User",
-    status: "Inactive",
-  },
 ];
 
 const UserList: React.FC = () => {
@@ -186,7 +165,7 @@ const UserList: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="bg-gray-50 p-4">
       <Breadcrumb
         className="mb-4"
         items={[
@@ -196,7 +175,7 @@ const UserList: React.FC = () => {
       />
       <div className="mb-6 mt-3">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex-2">
+          <div className="flex-1">
             <Search
               placeholder="Search users..."
               onSearch={handleSearch}
@@ -215,7 +194,7 @@ const UserList: React.FC = () => {
           </Button>
         </div>
       </div>
-      <div className="overflow-auto">
+      <div className="overflow-auto sm:overflow-hidden ">
         <Table
           columns={columns}
           dataSource={data}
@@ -230,7 +209,7 @@ const UserList: React.FC = () => {
             showTotal: (total, range) =>
               `Showing ${range[0]}-${range[1]} of ${total}`,
           }}
-          scroll={{ x: 800 }} // Đảm bảo cuộn ngang nếu bảng rộng
+          scroll={{ x: "max-content", y: 400 }} // Tự động cuộn ngang dựa trên nội dung
           className="custom-table"
         />
       </div>

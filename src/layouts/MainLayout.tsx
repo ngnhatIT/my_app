@@ -1,13 +1,10 @@
-import { Avatar, Dropdown, Layout, Menu } from "antd";
-import { Outlet } from "react-router-dom";
-import Header from "../components/layout/Header";
-import Sidebar from "../components/layout/Slidebar";
-import { Button, Space } from "antd";
-import { Link } from "react-router-dom";
+import { Avatar, Dropdown, Layout, Menu, Space, Button } from "antd";
+import { Outlet, Link } from "react-router-dom";
 import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { logout } from "../features/auth/AuthSlice";
+import Sidebar from "../components/layout/Slidebar"; // Giả sử bạn có component này
 
 const { Content } = Layout;
 
@@ -38,13 +35,8 @@ const MainLayout = () => {
 
     return (
       <div
-        className="p-4 mb-4 shadow-md"
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 10,
-          backgroundColor: "transparent",
-        }}
+        className="p-4 shadow-md bg-white" // Đã xóa position sticky, zIndex và backgroundColor transparent
+        style={{ flexShrink: 0 }} // Ngăn Navbar bị co lại
       >
         <Space className="flex justify-between items-center w-full">
           <Space>
@@ -74,23 +66,22 @@ const MainLayout = () => {
     );
   };
 
+  // HOÀN TOÀN LOẠI BỎ: useRef, useState, và useEffect để tính chiều cao Navbar
+
   return (
-    <Layout className="h-screen flex flex-col overflow-hidden">
-      <Layout hasSider className="flex-1 overflow-hidden">
+    <Layout className="h-screen overflow-hidden">
+      <Layout hasSider>
         <Sidebar />
-        <Layout className="bg-white flex-1">
-          <Content className="p-0 flex-1" style={{ height: "100%", margin: 0 }}>
-            <div className="h-full w-full">
-              <Navbar />
-              <div
-                style={{
-                  padding: "16px",
-                  overflowY: "auto",
-                  height: "calc(100% - 64px)",
-                }}
-              >
-                <Outlet />
-              </div>
+        {/* SỬA ĐỔI TẠI ĐÂY */}
+        <Layout className="flex flex-col">
+          {/* Content sẽ là container chính cho Navbar và Outlet */}
+          <Content className="flex flex-col flex-1 overflow-hidden">
+            {/* 1. Navbar: chiếm chiều cao cần thiết của nó */}
+            <Navbar />
+
+            {/* 2. Outlet container: chiếm toàn bộ không gian còn lại và tự động cuộn */}
+            <div className="min-h-height p-4 overflow-auto">
+              <Outlet />
             </div>
           </Content>
         </Layout>

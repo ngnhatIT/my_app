@@ -1,4 +1,4 @@
-import { Form, Input, Button, Typography, message } from "antd";
+import { Form, Input, Button, Typography, message, Card } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
@@ -12,7 +12,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div>
+    <Card className="w-full max-w-md shadow-lg rounded-lg p-6 bg-white ">
       <Title level={3} className="text-center text-blue-600">
         Quên mật khẩu
       </Title>
@@ -23,7 +23,13 @@ const ForgotPassword = () => {
         <Form.Item
           label="Email"
           name="email"
-          rules={[{ required: true, message: "Vui lòng nhập email hợp lệ!", type: "email" }]}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập email hợp lệ!",
+              type: "email",
+            },
+          ]}
         >
           <Input prefix={<MailOutlined />} placeholder="you@example.com" />
         </Form.Item>
@@ -33,7 +39,7 @@ const ForgotPassword = () => {
           </Button>
         </Form.Item>
       </Form>
-    </div>
+    </Card>
   );
 };
 export default ForgotPassword;

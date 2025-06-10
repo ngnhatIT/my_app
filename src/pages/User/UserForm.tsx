@@ -85,7 +85,7 @@ const UserForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className=" bg-gray-50 p-4">
       <Breadcrumb
         className="mb-4"
         items={[
