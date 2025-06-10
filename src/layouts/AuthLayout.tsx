@@ -20,7 +20,7 @@ const AuthLayout = () => {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-white">
       <div className="absolute top-4 right-4">
         <Select
           value={i18n.language}
@@ -33,7 +33,7 @@ const AuthLayout = () => {
           style={{ width: 120 }}
         />
       </div>
-      <div className="w-full max-w-md p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <div className="w-full max-w-md p-6 bg-white  ">
         <Outlet />
       </div>
     </div>

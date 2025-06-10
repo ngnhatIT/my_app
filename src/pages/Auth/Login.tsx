@@ -30,7 +30,7 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div className="bg-white p-6 rounded shadow-md max-w-md mx-auto mt-20">
       <Title level={3} className="text-center text-blue-600">
         {t("login.title")}
       </Title>

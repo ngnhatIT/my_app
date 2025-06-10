@@ -1,12 +1,13 @@
-import { Table, Button, Space, Typography, Input } from "antd"; // Loại Outlet khỏi antd
+import { Table, Button, Space, Typography, Input } from "antd";
 import { useState } from "react";
 import {
   EditOutlined,
   KeyOutlined,
   PlusOutlined,
   SearchOutlined,
+  UserAddOutlined,
 } from "@ant-design/icons";
-import { useNavigate, Outlet } from "react-router-dom"; // Import Outlet từ react-router-dom
+import { useNavigate, Outlet } from "react-router-dom";
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -50,8 +51,12 @@ const WorkspaceList: React.FC = () => {
   };
 
   const handleChangePassword = (record: Workspace) => {
-    console.log("Navigating to change password for ID:", record.id); // Debug log
+    console.log("Navigating to change password for ID:", record.id);
     navigate(`/workspaces/${record.id}/change-password`);
+  };
+
+  const handleAddUser = (record: Workspace) => {
+    navigate(`/workspaces/${record.id}/add-user`);
   };
 
   const handleSearch = (value: string) => {
@@ -108,6 +113,14 @@ const WorkspaceList: React.FC = () => {
           >
             Đổi mật khẩu
           </Button>
+          <Button
+            icon={<UserAddOutlined />}
+            onClick={() => handleAddUser(record)}
+            className="bg-gray-100 text-gray-800 hover:bg-gray-200 "
+            style={{ border: "none" }}
+          >
+            Thêm người dùng
+          </Button>
         </Space>
       ),
     },
@@ -151,8 +164,7 @@ const WorkspaceList: React.FC = () => {
           style={{ margin: 0, padding: 0 }}
         />
       </div>
-      <Outlet />{" "}
-      {/* Đặt <Outlet /> ở đây để render route con như /workspaces/:workspaceId/change-password */}
+      <Outlet />
     </div>
   );
 };

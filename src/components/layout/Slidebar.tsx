@@ -5,6 +5,7 @@ import {
   UserOutlined,
   FileTextOutlined,
   FolderOutlined,
+  DesktopOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -15,21 +16,63 @@ const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { key: "/", icon: <HomeOutlined />, label: "Trang chủ" },
-    { key: "/users", icon: <UserOutlined />, label: "Người dùng" },
+    { key: "/", icon: <HomeOutlined />, label: "Dashboard" },
+    { key: "/users", icon: <UserOutlined />, label: "User Management" },
+    // {
+    //   key: "/googlesheets",
+    //   icon: <FileTextOutlined />,
+    //   label: "Google Sheets Management",
+    // },
+    {
+      key: "Security & Monitoring",
+      icon: <DesktopOutlined />,
+      label: "Security & Monitoring",
+      children: [
+        {
+          key: "/settings/workspaces",
+          icon: <FolderOutlined />,
+          label: "Audit Logs",
+        },
+        {
+          key: "/settings/workspaces/change-password",
+          icon: <FolderOutlined />,
+          label: "Security Incidents",
+        },
+      ],
+    },
     {
       key: "/googlesheets",
       icon: <FileTextOutlined />,
-      label: "Google Sheets",
+      label: "Statistical",
     },
-    { key: "/settings", icon: <SettingOutlined />, label: "Cài đặt" },
-    { key: "/workspaces", icon: <FolderOutlined />, label: "Workspaces" },
+    {
+      key: "System Management",
+      label: "System Management",
+      icon: <SettingOutlined />,
+      children: [
+        {
+          key: "/settings/workspaces",
+          icon: <FolderOutlined />,
+          label: "Workspaces",
+        },
+        {
+          key: "/settings/workspaces/change-password",
+          icon: <FolderOutlined />,
+          label: "System Settings",
+        },
+        {
+          key: "/settings/workspaces/add-user",
+          icon: <FolderOutlined />,
+          label: "Device & IP",
+        },
+      ],
+    },
   ];
 
   return (
     <Sider
       className="bg-white dark:bg-gray-900 shadow h-full"
-      width={220}
+      width={250}
       style={{ height: "100%", overflow: "auto" }}
     >
       <Menu
@@ -40,7 +83,6 @@ const Sidebar = () => {
         selectedKeys={[location.pathname]}
         onClick={({ key }) => navigate(key)}
         items={menuItems}
-        className="dark:bg-gray-900 dark:text-white"
       />
     </Sider>
   );
