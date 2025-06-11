@@ -1,5 +1,5 @@
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Typography, message } from "antd";
+import { Button, Card, Form, Input, Typography, message, theme } from "antd";
 import { useDispatch } from "react-redux";
 import { registerSuccess } from "../../features/auth/AuthSlice";
 
@@ -8,6 +8,11 @@ const { Title } = Typography;
 
 const Register = () => {
   const dispatch = useDispatch();
+  
+const {
+    token: { colorBgContainer, colorTextBase },
+  } = theme.useToken();
+
 
   const handleRegister = (values: { email: string; username: string; password: string; confirmPassword: string }) => {
     if (values.password !== values.confirmPassword) {
@@ -24,7 +29,10 @@ const Register = () => {
   };
 
   return (
-    <div>
+   <Card
+    className="p-6 rounded-md shadow-md max-w-md w-full mx-auto mt-10"
+    style={{ background: colorBgContainer, color: colorTextBase }}
+  >
       <Title level={3} className="text-center text-blue-600">
         Đăng ký tài khoản
       </Title>
@@ -74,7 +82,7 @@ const Register = () => {
           </Button>
         </Form.Item>
       </Form>
-    </div>
+    </Card>
   );
 };
 export default Register;

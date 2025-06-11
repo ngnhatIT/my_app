@@ -1,7 +1,5 @@
-// src/layouts/AuthLayout.tsx
 import { Outlet, useNavigate } from "react-router-dom";
-import { Select } from "antd";
-import { theme as antdTheme } from "antd";
+import { Select, theme as antdTheme } from "antd";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -14,6 +12,10 @@ const AuthLayout = () => {
     (state: RootState) => state.auth.isAuthenticated
   );
 
+  const {
+    token: { colorBgContainer, colorTextBase },
+  } = antdTheme.useToken();
+
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/", { replace: true });
@@ -21,7 +23,11 @@ const AuthLayout = () => {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-white">
+    <div
+      className="min-h-screen flex flex-col justify-center items-center"
+      style={{ background: colorBgContainer, color: colorTextBase }}
+    >
+      {/* Language Selector */}
       <div className="absolute top-4 right-4">
         <Select
           value={i18n.language}
@@ -34,7 +40,16 @@ const AuthLayout = () => {
           style={{ width: 120 }}
         />
       </div>
-      <div className="w-full max-w-md p-6 bg-white  ">
+
+      {/* Auth Form Container */}
+      <div
+        className="w-full max-w-md p-6 rounded-md shadow-md"
+        style={{
+          background: colorBgContainer,
+          color: colorTextBase,
+          
+        }}
+      >
         <Outlet />
       </div>
     </div>

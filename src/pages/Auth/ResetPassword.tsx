@@ -1,23 +1,28 @@
-import { Form, Input, Button, Typography, message } from "antd";
+import { Form, Input, Button, Typography, message, theme } from "antd";
 import { LockOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 
 const ResetPassword = () => {
   const [form] = Form.useForm();
+  const {
+    token: { colorBgContainer, colorTextBase },
+  } = theme.useToken();
 
   const handleReset = (values: { password: string; confirmPassword: string }) => {
     if (values.password !== values.confirmPassword) {
       message.error("Mật khẩu không khớp!");
       return;
     }
-    console.log("Mật khẩu mới:", values.password);
     message.success("Đặt lại mật khẩu thành công!");
   };
 
   return (
-    <div>
-      <Title level={3} className="text-center text-blue-600">
+    <div
+      className="p-6 rounded-md shadow-md max-w-md w-full mx-auto mt-10"
+      style={{ background: colorBgContainer, color: colorTextBase }}
+    >
+      <Title level={3} className="text-center">
         Đặt lại mật khẩu
       </Title>
       <Form form={form} layout="vertical" onFinish={handleReset}>
@@ -55,4 +60,5 @@ const ResetPassword = () => {
     </div>
   );
 };
+
 export default ResetPassword;

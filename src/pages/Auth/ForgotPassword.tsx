@@ -1,10 +1,13 @@
-import { Form, Input, Button, Typography, message, Card } from "antd";
+import { Form, Input, Button, Typography, message, theme, Card } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 
 const ForgotPassword = () => {
   const [form] = Form.useForm();
+  const {
+    token: { colorBgContainer, colorTextBase },
+  } = theme.useToken();
 
   const handleSubmit = (values: { email: string }) => {
     console.log("Reset email sent to:", values.email);
@@ -12,11 +15,14 @@ const ForgotPassword = () => {
   };
 
   return (
-    <Card className="w-full max-w-md shadow-lg rounded-lg p-6 bg-white ">
-      <Title level={3} className="text-center text-blue-600">
+    <Card
+      className="p-6 rounded-md shadow-md max-w-md w-full mx-auto mt-10"
+      style={{ background: colorBgContainer, color: colorTextBase }}
+    >
+      <Title level={3} className="text-center">
         Quên mật khẩu
       </Title>
-      <p className="text-center text-gray-500 mb-4">
+      <p className="text-center mb-4">
         Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.
       </p>
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
@@ -24,11 +30,7 @@ const ForgotPassword = () => {
           label="Email"
           name="email"
           rules={[
-            {
-              required: true,
-              message: "Vui lòng nhập email hợp lệ!",
-              type: "email",
-            },
+            { required: true, type: "email", message: "Vui lòng nhập email!" },
           ]}
         >
           <Input prefix={<MailOutlined />} placeholder="you@example.com" />

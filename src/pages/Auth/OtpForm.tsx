@@ -1,9 +1,13 @@
-import { Flex, Typography, Button } from "antd";
+import { Flex, Typography, Button, theme } from "antd";
 import Otp, { type OTPProps } from "antd/es/input/OTP";
 
 const { Title } = Typography;
 
 const OtpForm = () => {
+  const {
+    token: { colorBgContainer, colorTextBase },
+  } = theme.useToken();
+
   const onChange: OTPProps["onChange"] = (text) => {
     console.log("OTP entered:", text);
   };
@@ -19,23 +23,18 @@ const OtpForm = () => {
 
   return (
     <form
-      aria-label="OTP input form for password reset"
-      style={{
-        backgroundColor: "#1a1a2e",
-        padding: "20px",
-        borderRadius: "8px",
-        color: "#fff",
-      }}
       onSubmit={(e) => {
-        e.preventDefault(); // Prevent default form submission
+        e.preventDefault();
         handleSubmit();
       }}
+      className="p-6 rounded-md shadow-md max-w-md w-full mx-auto mt-10"
+      style={{ background: colorBgContainer, color: colorTextBase }}
     >
-      <Title level={3} style={{ textAlign: "center", color: "#fff" }}>
-        Quên mật khẩu
+      <Title level={3} className="text-center">
+        Nhập mã OTP
       </Title>
-      <p style={{ textAlign: "center", color: "#ccc", marginBottom: "20px" }}>
-        Nhập OTP đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.
+      <p className="text-center mb-4">
+        Vui lòng nhập mã OTP bạn đã nhận được.
       </p>
       <Flex justify="center" align="center" vertical>
         <Otp
@@ -43,16 +42,8 @@ const OtpForm = () => {
           formatter={(str) => str.toUpperCase()}
           style={{ marginBottom: "20px" }}
         />
-        <Button
-          type="primary"
-          style={{
-            width: "100%",
-            backgroundColor: "#3a86ff",
-            borderColor: "#3a86ff",
-          }}
-          onClick={handleSubmit}
-        >
-          Gửi OTP
+        <Button type="primary" htmlType="submit" block>
+          Gửi mã xác nhận
         </Button>
       </Flex>
     </form>

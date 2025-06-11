@@ -1,42 +1,42 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "username": "alice",
       "email": "alice@example.com",
       "role": "admin",
       "status": "active"
     },
     {
-      "id": 2,
+      "id": "2",
       "username": "bob",
       "email": "bob@example.com",
       "role": "manager",
       "status": "active"
     },
     {
-      "id": 3,
+      "id": "3",
       "username": "carol",
       "email": "carol@example.com",
       "role": "user",
       "status": "inactive"
     },
     {
-      "id": 4,
+      "id": "4",
       "username": "carol",
       "email": "carol@example.com",
       "role": "user",
       "status": "inactive"
     },
     {
-      "id": 5,
+      "id": "5",
       "username": "carol",
       "email": "carol@example.com",
       "role": "user",
       "status": "inactive"
     },
     {
-      "id": 6,
+      "id": "6",
       "username": "carol",
       "email": "carol@example.com",
       "role": "user",
@@ -45,7 +45,7 @@
   ],
   "workspaces": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Workspace A",
       "owner": "admin@example.com",
       "users": [
@@ -54,7 +54,7 @@
       ]
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Workspace B",
       "owner": "mod@example.com",
       "users": [
@@ -64,18 +64,62 @@
   ],
   "googlesheets": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Marketing Plan",
       "createdAt": "2024-06-01",
       "owner": "alice@example.com",
-      "googleSheetUrl": "https://docs.google.com/spreadsheets/d/1co6PebTFKZJsbIhVTYZutF51xugeebRNKqHXoek39Ok/edit?rm=demo"
+      "googleSheetUrl": "https://docs.google.com/spreadsheets/d/1co6PebTFKZJsbIhVTYZutF51xugeebRNKqHXoek39Ok/edit"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Finance Tracker",
       "createdAt": "2024-05-15",
       "owner": "bob@example.com",
       "googleSheetUrl": "https://docs.google.com/spreadsheets/d/1co6PebTFKZJsbIhVTYZutF51xugeebRNKqHXoek39Ok/edit?gid=0#gid=0"
+    }
+  ],
+  "permissions": [
+    {
+      "id": "1",
+      "sheetName": "Marketing Plan",
+      "userId": 1,
+      "username": "alice",
+      "permissions": {
+        "edit": false,
+        "view": false,
+        "comment": false,
+        "download": false,
+        "export": true,
+        "import": false
+      }
+    },
+    {
+      "id": "2",
+      "sheetName": "Marketing Plan",
+      "userId": 2,
+      "username": "bob",
+      "permissions": {
+        "edit": true,
+        "view": true,
+        "comment": true,
+        "download": true,
+        "export": true,
+        "import": false
+      }
+    },
+    {
+      "id": "3",
+      "sheetName": "Finance Tracker",
+      "userId": 3,
+      "username": "carol",
+      "permissions": {
+        "edit": false,
+        "view": false,
+        "comment": false,
+        "download": false,
+        "export": false,
+        "import": false
+      }
     }
   ]
 }

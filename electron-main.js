@@ -1,11 +1,10 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
-import { fileURLToPath } from 'url'; // <--- Thêm import này
+import { fileURLToPath } from 'url';
 import isDev from 'electron-is-dev';
 
-// Trong môi trường ES Modules, bạn cần tính toán __dirname và __filename
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename); // <--- Thêm hai dòng này
+const __dirname = path.dirname(__filename);
 
 let mainWindow;
 
@@ -18,15 +17,12 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      // Đảm bảo đường dẫn preload.js vẫn đúng với __dirname mới
-      // Nếu bạn không dùng preload, có thể comment/xóa dòng này
       preload: path.join(__dirname, 'preload.js'),
     },
   });
 
   const startURL = isDev
     ? 'http://localhost:5173'
-    // Đảm bảo đường dẫn build/index.html vẫn đúng với __dirname mới
     : `file://${path.join(__dirname, '../build/index.html')}`;
 
   mainWindow.loadURL(startURL);
@@ -37,6 +33,27 @@ function createWindow() {
 
   mainWindow.on('closed', () => (mainWindow = null));
 }
+
+// 👉 THÊM: Mở cửa sổ toàn màn hình nhúng Google Sheet
+function openGoogleSheetFullscreen(url) {
+  const sheetWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+  sheetWindow.webContents.openDevTools();
+  sheetWindow.loadURL(url);
+}
+
+// 👉 Lắng nghe từ React (Renderer)
+ipcMain.on('open-google-sheet-fullscreen', (_event, url) => {
+  openGoogleSheetFullscreen(url);
+});
 
 app.on('ready', createWindow);
 

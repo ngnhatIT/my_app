@@ -9,9 +9,17 @@ import {
   Typography,
   Spin,
 } from "antd";
-import { EyeOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  EyeOutlined,
+  EditOutlined,
+  PlusOutlined,
+  FullscreenOutlined,
+} from "@ant-design/icons";
 import PageHeader from "../../layouts/PageHeader";
 import { useFakeApi } from "../../hooks/useFakeApi";
+
+// @ts-ignore
+const { ipcRenderer } = window.require?.("electron") || {};
 
 const { Text } = Typography;
 
@@ -33,9 +41,17 @@ const GoogleSheetList = () => {
 
   const { data: sheets, loading } = useFakeApi<GoogleSheet>("googlesheets");
 
-  const filteredData = sheets.filter((sheet: any) =>
+  const filteredData = sheets.filter((sheet: GoogleSheet) =>
     sheet.name.toLowerCase().includes(searchText.toLowerCase())
   );
+
+  const openInFullscreen = (url: string) => {
+    if (ipcRenderer) {
+      ipcRenderer.send("open-google-sheet-fullscreen", url);
+    } else {
+      window.open(url, "_blank");
+    }
+  };
 
   const columns = [
     {
@@ -68,6 +84,13 @@ const GoogleSheetList = () => {
       key: "actions",
       render: (_: any, record: GoogleSheet) => (
         <Space>
+          <Tooltip title="Toàn màn hình">
+            <Button
+              shape="circle"
+              icon={<FullscreenOutlined />}
+              onClick={() => openInFullscreen(record.googleSheetUrl)}
+            />
+          </Tooltip>
           <Tooltip title="Xem chi tiết">
             <Button
               shape="circle"
@@ -83,6 +106,14 @@ const GoogleSheetList = () => {
               onClick={() => navigate(`/googlesheets/${record.id}/edit`)}
             />
           </Tooltip>
+          <Tooltip title="Phân quyền">s
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<EditOutlined />}
+              onClick={() => navigate(`/googlesheets/${record.id}/permissions`)}
+            />
+          </Tooltip>
         </Space>
       ),
     },
@@ -93,7 +124,7 @@ const GoogleSheetList = () => {
       className="p-4"
       style={{ background: colorBgContainer, color: colorTextBase }}
     >
-      {/* Page Header with breadcrumb + search + add */}
+      {/* Page Header */}
       <PageHeader
         searchPlaceholder="Tìm kiếm theo tên sheet"
         onSearch={(value: string) => setSearchText(value)}
@@ -102,7 +133,7 @@ const GoogleSheetList = () => {
         breadcrumbPaths={[{ label: "Quản lý Google Sheets" }]}
       />
 
-      {/* Table content */}
+      {/* Table Content */}
       {loading ? (
         <div className="text-center py-10">
           <Spin size="large" />

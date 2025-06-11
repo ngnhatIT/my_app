@@ -1,94 +1,203 @@
-import { Table, Button, Space, Typography, Checkbox, message } from "antd";
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  Table,
+  Checkbox,
+  Typography,
+  Space,
+  Spin,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Popconfirm,
+  message,
+  theme as antdTheme,
+} from "antd";
+import axios from "axios";
 
-const { Title } = Typography;
+const { Text } = Typography;
+const PERMISSIONS = ["edit", "view", "comment", "download", "export", "import","print"];
 
 interface Permission {
-  id: number;
-  user: string;
-  canView: boolean;
-  canEdit: boolean;
+  [key: string]: boolean;
 }
 
-const mockPermissions: { [key: number]: Permission[] } = {
-  1: [
-    { id: 1, user: "Nguyen Van A", canView: true, canEdit: true },
-    { id: 2, user: "Tran Thi B", canView: true, canEdit: false },
-  ],
-  2: [{ id: 3, user: "Le Van C", canView: true, canEdit: false }],
-  3: [{ id: 4, user: "Nguyen Van A", canView: true, canEdit: true }],
-};
+interface RecordType {
+  id: number;
+  sheetName: string;
+  userId: number;
+  username: string;
+  permissions: Permission;
+}
 
-const GoogleSheetPermission: React.FC = () => {
-  const { sheetId } = useParams<{ sheetId?: string }>();
-  const [data, setData] = useState<Permission[]>([]);
-  const [loading, setLoading] = useState(true);
+const GoogleSheetPermissionMatrix: React.FC = () => {
+  const { token } = antdTheme.useToken();
+  const [data, setData] = useState<RecordType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
 
-  useEffect(() => {
-    if (sheetId) {
-      const id = Number(sheetId);
-      setData(mockPermissions[id] || []);
+  const fetchPermissions = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get("http://localhost:4000/permissions");
+      setData(res.data);
+    } catch (e) {
+      message.error("Không thể tải dữ liệu.");
+    } finally {
       setLoading(false);
     }
-  }, [sheetId]);
+  };
 
-  const handleTogglePermission = (id: number, field: "canView" | "canEdit") => {
-    setData(
-      data.map((item) =>
-        item.id === id ? { ...item, [field]: !item[field] } : item
-      )
-    );
-    message.success("Quyền đã được cập nhật!");
+  const updatePermission = async (
+    record: RecordType,
+    field: string,
+    checked: boolean
+  ) => {
+    const updated = {
+      ...record,
+      permissions: {
+        ...record.permissions,
+        [field]: checked,
+      },
+    };
+
+    try {
+      await axios.put(`http://localhost:4000/permissions/${record.id}`, updated);
+      setData((prev) =>
+        prev.map((r) => (r.id === record.id ? updated : r))
+      );
+      message.success("Đã cập nhật quyền");
+    } catch {
+      message.error("Không thể cập nhật");
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:4000/permissions/${id}`);
+      setData((prev) => prev.filter((item) => item.id !== id));
+      message.success("Đã xoá người dùng");
+    } catch {
+      message.error("Không thể xoá");
+    }
   };
 
   const columns = [
-    { title: "ID", dataIndex: "id", key: "id" },
-    { title: "Người dùng", dataIndex: "user", key: "user" },
     {
-      title: "Xem",
-      key: "canView",
-      render: (_: any, record: Permission) => (
-        <Checkbox
-          checked={record.canView}
-          onChange={() => handleTogglePermission(record.id, "canView")}
-        />
-      ),
+      title: "Tên Sheet",
+      dataIndex: "sheetName",
+      key: "sheetName",
+      render: (text: string) => <Text strong>{text}</Text>,
     },
     {
-      title: "Sửa",
-      key: "canEdit",
-      render: (_: any, record: Permission) => (
+      title: "Người dùng",
+      dataIndex: "username",
+      key: "username",
+    },
+    ...PERMISSIONS.map((perm) => ({
+      title: perm.charAt(0).toUpperCase() + perm.slice(1),
+      key: perm,
+      align: "center" as const,
+      render: (_: any, record: RecordType) => (
         <Checkbox
-          checked={record.canEdit}
-          onChange={() => handleTogglePermission(record.id, "canEdit")}
+          checked={record.permissions?.[perm]}
+          onChange={(e) =>
+            updatePermission(record, perm, e.target.checked)
+          }
         />
+      ),
+    })),
+    {
+      title: "Hành động",
+      key: "actions",
+      render: (_: any, record: RecordType) => (
+        <Popconfirm
+          title="Xoá người dùng này?"
+          onConfirm={() => handleDelete(record.id)}
+        >
+          <Button danger>Xoá</Button>
+        </Popconfirm>
       ),
     },
   ];
 
+  const handleAdd = async () => {
+    try {
+      const values = await form.validateFields();
+      const newPermission: RecordType = {
+        ...values,
+        id: Date.now(), // chỉ dùng tạm nếu server không tự sinh
+        permissions: PERMISSIONS.reduce(
+          (acc, perm) => ({ ...acc, [perm]: false }),
+          {} as Permission
+        ),
+      };
+      await axios.post("http://localhost:4000/permissions", newPermission);
+      fetchPermissions();
+      setIsModalOpen(false);
+      message.success("Đã thêm người dùng");
+    } catch {
+      message.error("Lỗi khi thêm");
+    }
+  };
+
+  useEffect(() => {
+    fetchPermissions();
+  }, []);
+
   return (
-    <div className="h-full flex flex-col p-6 bg-white dark:bg-gray-900">
-      <div className="mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
-        <Title level={3} className="!mb-0 text-gray-900 dark:text-gray-100">
-          Phân quyền Google Sheet
-        </Title>
-      </div>
-      <div className="flex-1 overflow-auto">
+    <div
+      className="p-4"
+      style={{ background: token.colorBgContainer, color: token.colorTextBase }}
+    >
+      <Space
+        className="w-full mb-4"
+        align="center"
+        style={{ justifyContent: "space-between" }}
+      >
+        <Text strong className="text-lg">
+          Quản lý phân quyền Google Sheets
+        </Text>
+        <Button type="primary" onClick={() => setIsModalOpen(true)}>
+          Thêm người dùng
+        </Button>
+      </Space>
+
+      {loading ? (
+        <Spin />
+      ) : (
         <Table
+          rowKey={(r) => r.id}
           columns={columns}
           dataSource={data}
-          rowKey="id"
-          bordered
-          loading={loading}
           pagination={false}
-          scroll={{ y: "calc(100vh - 100px)" }}
-          className="custom-table"
-          style={{ margin: 0, padding: 0 }}
+          bordered
         />
-      </div>
+      )}
+
+      <Modal
+        title="Thêm người dùng"
+        open={isModalOpen}
+        onOk={handleAdd}
+        onCancel={() => setIsModalOpen(false)}
+        okText="Thêm"
+        destroyOnClose
+      >
+        <Form layout="vertical" form={form}>
+          <Form.Item name="sheetName" label="Tên Sheet" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="username" label="Tên người dùng" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="userId" label="ID người dùng" rules={[{ required: true }]}>
+            <Input type="number" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
 
-export default GoogleSheetPermission;
+export default GoogleSheetPermissionMatrix;

@@ -1,69 +1,67 @@
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Typography, message } from "antd";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { Button, Card, Form, Input, Typography, theme } from "antd";
 import { useDispatch } from "react-redux";
-
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { loginSuccess } from "../../features/auth/AuthSlice";
+import { useNavigate } from "react-router-dom";
 
-const { Title } = Typography;
+const { Title, Text, Link } = Typography;
+
 
 const Login = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const [form] = Form.useForm();
+  const {
+    token: { colorBgContainer, colorTextBase },
+  } = theme.useToken();
 
-  const handleLogin = (values: {
-    email: string;
-    username: string;
-    password: string;
-  }) => {
+  const handleLogin = (values: { email: string; password: string }) => {
     dispatch(
       loginSuccess({
         id: "1",
-        username: values.username,
-        email: "",
+        email: values.email,
+        username: values.email.split("@")[0],
       })
     );
-    message.success(t("login.success"));
-    navigate("/");
   };
 
   return (
-    <div className="bg-white p-6 rounded shadow-md max-w-md mx-auto mt-20">
-      <Title level={3} className="text-center text-blue-600">
-        {t("login.title")}
+    <Card
+      className="p-6 rounded-md shadow-md max-w-md w-full mx-auto mt-10"
+      style={{ background: colorBgContainer, color: colorTextBase }}
+    >
+      <Title level={3} className="text-center">
+        Đăng nhập
       </Title>
-      <Form layout="vertical" onFinish={handleLogin}>
+      <Form form={form} layout="vertical" onFinish={handleLogin}>
         <Form.Item
-          name="username"
-          label={t("login.username")}
-          rules={[{ required: true, message: t("login.username_required") }]}
+          name="email"
+          label="Email"
+          rules={[{ required: true, message: "Vui lòng nhập email!" }]}
         >
-          <Input prefix={<UserOutlined />} placeholder={t("login.username")} />
+          <Input prefix={<MailOutlined />} placeholder="you@example.com" />
         </Form.Item>
         <Form.Item
           name="password"
-          label={t("login.password")}
-          rules={[{ required: true, message: t("login.password_required") }]}
+          label="Mật khẩu"
+          rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
         >
           <Input.Password prefix={<LockOutlined />} placeholder="••••••••" />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
-            {t("login.button")}
+            Đăng nhập
           </Button>
         </Form.Item>
-        <div className="flex justify-between mt-2">
-          <Button type="link" onClick={() => navigate("/auth/register")}>
-            {t("login.register")}
-          </Button>
-          <Button type="link" onClick={() => navigate("/auth/forgot-password")}>
-            {t("login.forgot")}
-          </Button>
-        </div>
       </Form>
-    </div>
+      <div className="flex justify-between mt-4">
+        <Link onClick={() => navigate("/auth/register")}>Đăng ký tài khoản</Link>
+        <Link onClick={() => navigate("/auth/forgot-password")}>
+          Quên mật khẩu?
+        </Link>
+      </div>
+    </Card>
   );
 };
+
 export default Login;

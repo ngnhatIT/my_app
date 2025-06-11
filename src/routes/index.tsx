@@ -57,7 +57,7 @@ const router = createBrowserRouter([
         path: "settings/workspaces/:workspaceId/change-password",
         element: (
           <ProtectedRoute>
-            <WorkspaceChangePassword />
+            <WorkspaceChangePassword workspace={undefined} onClose={undefined} />
           </ProtectedRoute>
         ),
       },
@@ -65,7 +65,7 @@ const router = createBrowserRouter([
         path: "settings/workspaces/:workspaceId/add-user",
         element: (
           <ProtectedRoute>
-            <WorkspaceAddUser />
+            <WorkspaceAddUser workspace={undefined} onClose={undefined} />
           </ProtectedRoute>
         ),
       },

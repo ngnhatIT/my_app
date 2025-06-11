@@ -13,21 +13,20 @@ contextBridge.exposeInMainWorld("electron", {
 
 // DOM Manipulation để ẩn nút "Đăng nhập"
 window.addEventListener("DOMContentLoaded", () => {
-  console.log("🔍 Looking for docs-titlebar-buttons...");
-
-  const hideTitlebarButtons = () => {
-    const target = document.querySelector(".docs-titlebar-buttons");
-    if (target) {
-      console.log("✅ Hiding .docs-titlebar-buttons");
-      target.style.display = "none";
-    }
+  const hideLoginButton = () => {
+    const buttons = document.querySelectorAll("button");
+    buttons.forEach((btn) => {
+      if (btn.textContent?.toLowerCase().includes("đăng nhập") || btn.textContent?.toLowerCase().includes("sign in")) {
+        btn.style.display = "none";
+      }
+    });
   };
 
-  // Gọi nhiều lần vì Google Sheet render động
+  // Thử nhiều lần vì Google Sheet có thể tải động
   let attempts = 0;
   const interval = setInterval(() => {
-    hideTitlebarButtons();
+    hideLoginButton();
     attempts++;
-    if (attempts > 20) clearInterval(interval);
+    if (attempts > 20) clearInterval(interval); // tối đa 20 lần (10s)
   }, 500);
 });
