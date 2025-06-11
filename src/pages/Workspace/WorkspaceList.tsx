@@ -1,170 +1,257 @@
-import { Table, Button, Space, Typography, Input } from "antd";
-import { useState } from "react";
+import React, { useState } from "react";
 import {
-  EditOutlined,
-  KeyOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  UserAddOutlined,
+  Table,
+  Button,
+  Modal,
+  Space,
+  Avatar,
+  Tooltip,
+  List,
+  Typography,
+  message,
+  Popconfirm,
+  theme as antdTheme,
+} from "antd";
+import {
+  UsergroupAddOutlined,
+  LockOutlined,
+  EyeOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
-import { useNavigate, Outlet } from "react-router-dom";
 
-const { Title } = Typography;
-const { Search } = Input;
+import WorkspaceAddUser from "./WorkspaceAddUser";
+import WorkspaceChangePassword from "./WorkspaceChangePassword";
+import { useFakeApi } from "../../hooks/useFakeApi";
+import PageHeader from "../../layouts/PageHeader";
+
+const { Text } = Typography;
 
 interface Workspace {
   id: number;
   name: string;
   owner: string;
-  createdAt: string;
+  users: number[];
 }
 
-const mockData: Workspace[] = [
-  {
-    id: 1,
-    name: "Marketing Team",
-    owner: "alice@example.com",
-    createdAt: "2024-01-10",
-  },
-  {
-    id: 2,
-    name: "DevOps Workspace",
-    owner: "bob@example.com",
-    createdAt: "2024-03-02",
-  },
-  {
-    id: 3,
-    name: "Design Group",
-    owner: "carol@example.com",
-    createdAt: "2024-05-18",
-  },
-];
+interface User {
+  id: number;
+  username: string;
+  email: string;
+}
 
 const WorkspaceList: React.FC = () => {
-  const navigate = useNavigate();
-  const [data, setData] = useState<Workspace[]>(mockData);
-  const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const {
+    token: { colorBgContainer, colorTextBase },
+  } = antdTheme.useToken();
 
-  const handleEdit = (record: Workspace) => {
-    navigate(`/workspaces/${record.id}/edit`);
+  const { data: workspaces } = useFakeApi<Workspace>("workspaces");
+  const { data: users } = useFakeApi<User>("users");
+
+  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(
+    null
+  );
+  const [modalType, setModalType] = useState<
+    "addUser" | "changePassword" | "viewUsers" | null
+  >(null);
+
+  const openModal = (workspace: Workspace, type: typeof modalType) => {
+    setSelectedWorkspace(workspace);
+    setModalType(type);
   };
 
-  const handleChangePassword = (record: Workspace) => {
-    console.log("Navigating to change password for ID:", record.id);
-    navigate(`/workspaces/${record.id}/change-password`);
+  const closeModal = () => {
+    setModalType(null);
   };
 
-  const handleAddUser = (record: Workspace) => {
-    navigate(`/workspaces/${record.id}/add-user`);
+  const afterClose = () => {
+    setSelectedWorkspace(null);
   };
 
-  const handleSearch = (value: string) => {
-    setSearchText(value);
-    if (value) {
-      const filteredData = mockData.filter((item) =>
-        item.name.toLowerCase().includes(value.toLowerCase())
-      );
-      setData(filteredData);
-    } else {
-      setData(mockData);
-    }
+  const handleRemoveUser = (userId: number) => {
+    if (!selectedWorkspace) return;
+    const updatedUsers = selectedWorkspace.users.filter((id) => id !== userId);
+    const updatedWorkspace = { ...selectedWorkspace, users: updatedUsers };
+    message.success("Đã xoá người dùng khỏi workspace");
+    setSelectedWorkspace(updatedWorkspace);
+  };
+
+  const renderUserAvatars = (workspace: Workspace) => {
+    const userObjects = workspace.users
+      .map((id) => users.find((u: any) => u.id === id))
+      .filter(Boolean) as User[];
+
+    const maxDisplay = 5;
+    const visible = userObjects.slice(0, maxDisplay);
+    const extra = userObjects.length - maxDisplay;
+
+    return (
+      <Space size="small">
+        {visible.map((user) => (
+          <Tooltip title={user.username} key={user.id}>
+            <Avatar style={{ backgroundColor: "#87d068" }}>
+              {user.username.charAt(0).toUpperCase()}
+            </Avatar>
+          </Tooltip>
+        ))}
+        {extra > 0 && <Avatar>+{extra}</Avatar>}
+        <Tooltip title="Xem tất cả người dùng">
+          <Button
+            type="text"
+            shape="circle"
+            icon={<EyeOutlined />}
+            onClick={() => openModal(workspace, "viewUsers")}
+          />
+        </Tooltip>
+      </Space>
+    );
   };
 
   const columns = [
     {
       title: "Tên Workspace",
       dataIndex: "name",
-      key: "name",
-      render: (text: string) => (
-        <span className="font-medium text-gray-800">{text}</span>
-      ),
     },
     {
-      title: "Người tạo",
+      title: "Chủ sở hữu",
       dataIndex: "owner",
-      key: "owner",
-      render: (text: string) => <span className="text-gray-600 ">{text}</span>,
     },
     {
-      title: "Ngày tạo",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (text: string) => <span className="text-gray-600">{text}</span>,
+      title: "Người dùng",
+      key: "users",
+      render: (_: any, record: Workspace) => renderUserAvatars(record),
     },
     {
-      title: "Thao tác",
-      key: "actions",
+      title: "Hành động",
       render: (_: any, record: Workspace) => (
-        <Space size="middle">
-          <Button
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-            className="bg-gray-100 text-gray-800 hover:bg-gray-200 "
-            style={{ border: "none" }}
-          >
-            Sửa
-          </Button>
-          <Button
-            icon={<KeyOutlined />}
-            onClick={() => handleChangePassword(record)}
-            className="bg-gray-100 text-gray-800 hover:bg-gray-200 "
-            style={{ border: "none" }}
-          >
-            Đổi mật khẩu
-          </Button>
-          <Button
-            icon={<UserAddOutlined />}
-            onClick={() => handleAddUser(record)}
-            className="bg-gray-100 text-gray-800 hover:bg-gray-200 "
-            style={{ border: "none" }}
-          >
-            Thêm người dùng
-          </Button>
+        <Space>
+          <Tooltip title="Thêm người dùng">
+            <Button
+              icon={<UsergroupAddOutlined />}
+              onClick={() => openModal(record, "addUser")}
+            />
+          </Tooltip>
+          <Tooltip title="Đổi mật khẩu">
+            <Button
+              icon={<LockOutlined />}
+              onClick={() => openModal(record, "changePassword")}
+            />
+          </Tooltip>
         </Space>
       ),
     },
   ];
 
   return (
-    <div className="h-full flex flex-col p-6 bg-white ">
-      <div className="flex justify-between items-center mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
-        <Title level={3} className="!mb-0 text-gray-900">
-          Quản lý Workspace
-        </Title>
-        <div className="flex items-center gap-4">
-          <Search
-            placeholder="Tìm kiếm Workspace..."
-            onSearch={handleSearch}
-            enterButton={<SearchOutlined />}
-            style={{ width: 200 }}
-            allowClear
+    <div
+      className="p-4"
+      style={{ background: colorBgContainer, color: colorTextBase }}
+    >
+      {/* Header với breadcrumb và nút tạo mới */}
+      <PageHeader
+        breadcrumbPaths={[{ label: "Quản lý Workspace" }]}
+        searchPlaceholder="Tìm kiếm workspace"
+        onSearch={(text: any) => {
+          // nếu muốn lọc workspace theo tên
+          console.log("search", text);
+        }}
+        addButtonVisible={true}
+        addButtonLabel="Tạo Workspace mới"
+        addButtonAction={() => {
+          message.info("Chức năng tạo workspace mới sẽ sớm được triển khai.");
+        }}
+      />
+
+      <Table
+        rowKey="id"
+        columns={columns}
+        dataSource={workspaces}
+        pagination={{ pageSize: 5 }}
+        bordered
+        className="rounded-md"
+        scroll={{ x: true }}
+      />
+
+      {/* Modal Thêm người dùng */}
+      <Modal
+        title="Thêm người dùng"
+        open={modalType === "addUser"}
+        onCancel={closeModal}
+        afterClose={afterClose}
+        footer={null}
+        destroyOnClose
+        centered
+      >
+        {modalType === "addUser" && selectedWorkspace && (
+          <WorkspaceAddUser
+            workspace={selectedWorkspace}
+            onClose={closeModal}
           />
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => navigate("/workspaces/new")}
-            className="bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
-            style={{ border: "none", padding: "6px 16px" }}
-          >
-            Thêm Workspace
-          </Button>
-        </div>
-      </div>
-      <div className="flex-1 overflow-auto">
-        <Table
-          columns={columns}
-          dataSource={data}
-          rowKey="id"
-          bordered
-          loading={loading}
-          pagination={false}
-          scroll={{ y: "calc(100vh - 140px)" }}
-          className="custom-table"
-          style={{ margin: 0, padding: 0 }}
-        />
-      </div>
-      <Outlet />
+        )}
+      </Modal>
+
+      {/* Modal Đổi mật khẩu */}
+      <Modal
+        title="Đổi mật khẩu Workspace"
+        open={modalType === "changePassword"}
+        onCancel={closeModal}
+        afterClose={afterClose}
+        footer={null}
+        destroyOnClose
+        centered
+      >
+        {modalType === "changePassword" && selectedWorkspace && (
+          <WorkspaceChangePassword
+            workspace={selectedWorkspace}
+            onClose={closeModal}
+          />
+        )}
+      </Modal>
+
+      {/* Modal xem danh sách người dùng */}
+      <Modal
+        title="Danh sách người dùng"
+        open={modalType === "viewUsers"}
+        onCancel={closeModal}
+        afterClose={afterClose}
+        footer={null}
+        destroyOnClose
+        centered
+      >
+        {modalType === "viewUsers" && selectedWorkspace && (
+          <List
+            dataSource={
+              selectedWorkspace.users
+                .map((id) => users.find((u: any) => u.id === id))
+                .filter(Boolean) as User[]
+            }
+            renderItem={(user) => (
+              <List.Item
+                key={user.id}
+                actions={[
+                  <Popconfirm
+                    title="Xoá người dùng khỏi workspace?"
+                    onConfirm={() => handleRemoveUser(user.id)}
+                    okText="Xoá"
+                    cancelText="Huỷ"
+                  >
+                    <Button icon={<DeleteOutlined />} danger />
+                  </Popconfirm>,
+                ]}
+              >
+                <List.Item.Meta
+                  avatar={
+                    <Avatar style={{ backgroundColor: "#1890ff" }}>
+                      {user.username.charAt(0).toUpperCase()}
+                    </Avatar>
+                  }
+                  title={<Text>{user.username}</Text>}
+                  description={user.email}
+                />
+              </List.Item>
+            )}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

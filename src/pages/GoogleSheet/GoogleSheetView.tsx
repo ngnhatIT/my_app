@@ -1,85 +1,57 @@
-import { Table, Button, Typography } from "antd";
-import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Button, Typography, Spin } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useFakeApi } from "../../hooks/useFakeApi";
 
 const { Title } = Typography;
 
-interface SheetData {
+interface GoogleSheet {
   id: number;
-  row: number;
-  column: string;
-  value: string;
+  name: string;
+  googleSheetUrl: string;
+  owner: string;
+  createdAt: string;
 }
 
-const mockSheetData: { [key: number]: SheetData[] } = {
-  1: [
-    { id: 1, row: 1, column: "A", value: "Revenue" },
-    { id: 2, row: 1, column: "B", value: "1000" },
-    { id: 3, row: 2, column: "A", value: "Cost" },
-    { id: 4, row: 2, column: "B", value: "500" },
-  ],
-  2: [
-    { id: 5, row: 1, column: "A", value: "Task" },
-    { id: 6, row: 1, column: "B", value: "Design" },
-    { id: 7, row: 2, column: "A", value: "Status" },
-    { id: 8, row: 2, column: "B", value: "Done" },
-  ],
-};
-
-const GoogleSheetView: React.FC = () => {
-  const { sheetId } = useParams<{ sheetId?: string }>();
-  const [data, setData] = useState<SheetData[]>([]);
-  const [loading, setLoading] = useState(true);
+const GoogleSheetView = () => {
+  const { sheetId } = useParams<{ sheetId: string }>();
   const navigate = useNavigate();
+  const [sheet, setSheet] = useState<GoogleSheet | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const { data, loading: apiLoading } = useFakeApi<GoogleSheet>("googlesheets");
 
   useEffect(() => {
-    if (sheetId) {
-      const id = Number(sheetId);
-      setData(mockSheetData[id] || []);
+    if (sheetId && data.length > 0) {
+      const target = data.find((s) => s.id === Number(sheetId));
+      setSheet(target || null);
       setLoading(false);
     }
-  }, [sheetId]);
+  }, [sheetId, data]);
 
-  const columns = [
-    { title: "ID", dataIndex: "id", key: "id" },
-    { title: "Dòng", dataIndex: "row", key: "row" },
-    { title: "Cột", dataIndex: "column", key: "column" },
-    { title: "Giá trị", dataIndex: "value", key: "value" },
-  ];
+  if (loading || apiLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col p-6 bg-white dark:bg-gray-900">
-      <div className="mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
-        <Title level={3} className="!mb-0 text-gray-900 dark:text-gray-100">
-          Xem Google Sheet
-        </Title>
-      </div>
-      <div className="flex-1 overflow-auto">
-        <Table
-          columns={columns}
-          dataSource={data}
-          rowKey="id"
-          bordered
-          loading={loading}
-          pagination={false}
-          scroll={{ y: "calc(100vh - 140px)" }}
-          className="custom-table"
-          style={{ margin: 0, padding: 0 }}
+    <div className="bg-white">
+      {sheet?.googleSheetUrl ? (
+        <iframe
+          title="Google Sheet Preview"
+          src={sheet.googleSheetUrl}
+          className="w-full mb-4"
+          style={{ height: "calc(100vh)", marginTop: "-20px" }} // 64px = chiều cao header
+          frameBorder="0"
+          allowFullScreen
         />
-      </div>
-      <div className="mt-6">
-        <Button
-          type="default"
-          size="large"
-          block
-          onClick={() => navigate("/googlesheets")}
-          className="bg-gray-200 hover:bg-gray-300 text-gray-800 transition duration-200"
-        >
-          <ArrowLeftOutlined className="mr-2" /> Quay lại
-        </Button>
-      </div>
+      ) : (
+        <p className="text-red-500 p-4">Không tìm thấy Google Sheet.</p>
+      )}
     </div>
   );
 };

@@ -1,4 +1,6 @@
+// components/layout/Slidebar.tsx
 import { Layout, Menu } from "antd";
+import { theme as antdTheme } from "antd";
 import {
   HomeOutlined,
   SettingOutlined,
@@ -6,49 +8,55 @@ import {
   FileTextOutlined,
   FolderOutlined,
   DesktopOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
 
 const { Sider } = Layout;
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [collapsed, setCollapsed] = useState(false);
+  const {
+    token: { colorBgContainer, colorTextBase },
+  } = antdTheme.useToken();
+
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+  };
 
   const menuItems = [
     { key: "/", icon: <HomeOutlined />, label: "Dashboard" },
-    { key: "/users", icon: <UserOutlined />, label: "User Management" },
-    // {
-    //   key: "/googlesheets",
-    //   icon: <FileTextOutlined />,
-    //   label: "Google Sheets Management",
-    // },
+    { key: "/users", icon: <UserOutlined />, label: "Users" },
     {
-      key: "Security & Monitoring",
+      key: "/googlesheets",
+      icon: <FileTextOutlined />,
+      label: "Google Sheets",
+    },
+    {
+      key: "security",
       icon: <DesktopOutlined />,
-      label: "Security & Monitoring",
+      label: "Security",
       children: [
         {
-          key: "/settings/workspaces",
+          key: "/settings/logs",
           icon: <FolderOutlined />,
           label: "Audit Logs",
         },
         {
-          key: "/settings/workspaces/change-password",
+          key: "/settings/incidents",
           icon: <FolderOutlined />,
-          label: "Security Incidents",
+          label: "Incidents",
         },
       ],
     },
     {
-      key: "/googlesheets",
-      icon: <FileTextOutlined />,
-      label: "Statistical",
-    },
-    {
-      key: "System Management",
-      label: "System Management",
+      key: "system",
       icon: <SettingOutlined />,
+      label: "System",
       children: [
         {
           key: "/settings/workspaces",
@@ -56,14 +64,14 @@ const Sidebar = () => {
           label: "Workspaces",
         },
         {
-          key: "/settings/workspaces/change-password",
+          key: "/settings/settings",
           icon: <FolderOutlined />,
-          label: "System Settings",
+          label: "Settings",
         },
         {
-          key: "/settings/workspaces/add-user",
+          key: "/settings/devices",
           icon: <FolderOutlined />,
-          label: "Device & IP",
+          label: "Devices & IP",
         },
       ],
     },
@@ -71,18 +79,35 @@ const Sidebar = () => {
 
   return (
     <Sider
-      className="bg-white dark:bg-gray-900 shadow h-full"
-      width={250}
-      style={{ height: "100%", overflow: "auto" }}
+      collapsed={collapsed}
+      breakpoint="lg"
+      onBreakpoint={(broken) => setCollapsed(broken)}
+      collapsedWidth={60}
+      style={{
+        height: "100%",
+        overflow: "auto",
+        background: colorBgContainer,
+        color: colorTextBase,
+      }}
     >
+      <div
+        className="p-4 flex items-center justify-between"
+        style={{ color: colorTextBase }}
+      >
+        {!collapsed && (
+          <span className="font-semibold text-lg">Sheet Manager</span>
+        )}
+        <span onClick={toggleCollapsed} className="cursor-pointer ml-auto">
+          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+        </span>
+      </div>
       <Menu
-        theme="light"
-        rootClassName="h-full"
-        style={{ height: "100%", borderRight: 0 }}
         mode="inline"
         selectedKeys={[location.pathname]}
+        defaultOpenKeys={collapsed ? [] : ["security", "system"]}
         onClick={({ key }) => navigate(key)}
         items={menuItems}
+        style={{ background: colorBgContainer, color: colorTextBase }}
       />
     </Sider>
   );

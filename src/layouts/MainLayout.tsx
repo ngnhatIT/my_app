@@ -1,19 +1,48 @@
-import { Avatar, Dropdown, Layout, Menu, Space, Button } from "antd";
-import { Outlet, Link } from "react-router-dom";
-import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
+import {
+  Layout,
+  Avatar,
+  Dropdown,
+  Menu,
+  Space,
+  Button,
+  Typography,
+  Switch,
+} from "antd";
+import {
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
+  BulbOutlined,
+} from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { logout } from "../features/auth/AuthSlice";
-import Sidebar from "../components/layout/Slidebar"; // Giả sử bạn có component này
-
-const { Content } = Layout;
+import { theme as antdTheme } from "antd";
+import { Content, Header } from "antd/es/layout/layout";
+import Sidebar from "../components/layout/Slidebar";
+import { toggleTheme } from "../features/settings/themeSlice";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const MainLayout = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
+  const isDark = useSelector((state: RootState) => state.theme.darkMode);
+  const navigate = useNavigate();
+  const {
+    token: { colorBgContainer, colorTextBase },
+  } = antdTheme.useToken();
+
+  const location = useLocation();
+  const hideHeader =
+    location.pathname.includes("/googlesheets/") &&
+    location.pathname.includes("/view");
 
   const handleLogout = () => {
     dispatch(logout());
+    navigate("/login", { replace: true });
+  };
+
+  const handleToggleTheme = () => {
+    dispatch(toggleTheme());
   };
 
   const menu = (
@@ -24,63 +53,71 @@ const MainLayout = () => {
     </Menu>
   );
 
-  const Navbar = () => {
-    const handleBack = () => {
-      window.history.back();
-    };
-
-    const handleForward = () => {
-      window.history.forward();
-    };
+  const AppHeader = () => {
+    const handleBack = () => window.history.back();
+    const handleForward = () => window.history.forward();
 
     return (
-      <div
-        className="p-4 shadow-md bg-white" // Đã xóa position sticky, zIndex và backgroundColor transparent
-        style={{ flexShrink: 0 }} // Ngăn Navbar bị co lại
+      <Header
+        className="px-4 shadow-sm flex items-center justify-between"
+        style={{ background: colorBgContainer }}
       >
-        <Space className="flex justify-between items-center w-full">
-          <Space>
-            <Button
-              icon={<ArrowLeftOutlined />}
-              onClick={handleBack}
-              className="text-gray-600 hover:text-gray-800 bg-transparent rounded-full border-none"
-              style={{ padding: "8px" }}
-            />
-            <Button
-              icon={<ArrowRightOutlined />}
-              onClick={handleForward}
-              className="text-gray-600 hover:text-gray-800 bg-transparent rounded-full border-none"
-              style={{ padding: "8px" }}
-            />
-          </Space>
+        <Space>
+          <Button
+            icon={<ArrowLeftOutlined />}
+            onClick={handleBack}
+            className="bg-transparent border-none"
+            style={{ padding: "8px", color: colorTextBase }}
+          />
+          <Button
+            icon={<ArrowRightOutlined />}
+            onClick={handleForward}
+            className="bg-transparent border-none"
+            style={{ padding: "8px", color: colorTextBase }}
+          />
+        </Space>
+        <Typography.Title
+          level={5}
+          style={{ marginBottom: 0, color: colorTextBase }}
+        >
+          Google Sheet Manager
+        </Typography.Title>
+        <Space>
+          <Switch
+            checked={isDark}
+            onChange={handleToggleTheme}
+            size="small"
+            checkedChildren={<BulbOutlined />}
+            unCheckedChildren={<BulbOutlined />}
+          />
           <Dropdown overlay={menu} placement="bottomRight">
-            <div className="flex items-center gap-2 cursor-pointer">
+            <div
+              className="flex items-center gap-2 cursor-pointer"
+              style={{ color: colorTextBase }}
+            >
               <Avatar>{user?.username?.[0]?.toUpperCase() || "U"}</Avatar>
-              <span className="text-sm text-gray-700">
-                {user?.username || "Unknown"}
-              </span>
+              <span className="text-sm">{user?.username || "Unknown"}</span>
             </div>
           </Dropdown>
         </Space>
-      </div>
+      </Header>
     );
   };
-
-  // HOÀN TOÀN LOẠI BỎ: useRef, useState, và useEffect để tính chiều cao Navbar
 
   return (
     <Layout className="h-screen overflow-hidden">
       <Layout hasSider>
         <Sidebar />
-        {/* SỬA ĐỔI TẠI ĐÂY */}
         <Layout className="flex flex-col">
-          {/* Content sẽ là container chính cho Navbar và Outlet */}
-          <Content className="flex flex-col flex-1 overflow-hidden">
-            {/* 1. Navbar: chiếm chiều cao cần thiết của nó */}
-            <Navbar />
-
-            {/* 2. Outlet container: chiếm toàn bộ không gian còn lại và tự động cuộn */}
-            <div className="min-h-height p-4 overflow-auto">
+          {!hideHeader && <AppHeader />}
+          <Content
+            className="flex flex-col flex-1 overflow-hidden"
+            style={{ background: colorBgContainer }}
+          >
+            <div
+              className={`flex-1 p-4 ${!hideHeader ? "overflow-auto" : ""}`}
+              style={{ color: colorTextBase }}
+            >
               <Outlet />
             </div>
           </Content>

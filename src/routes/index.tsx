@@ -38,7 +38,7 @@ const router = createBrowserRouter([
         children: [{}],
       },
       {
-        path: "/workspaces",
+        path: "settings/workspaces",
         element: (
           <ProtectedRoute>
             <WorkspaceList />
@@ -46,7 +46,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/workspaces/new",
+        path: "settings/workspaces/new",
         element: (
           <ProtectedRoute>
             <WorkspaceForm />
@@ -54,7 +54,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/workspaces/:workspaceId/change-password",
+        path: "settings/workspaces/:workspaceId/change-password",
         element: (
           <ProtectedRoute>
             <WorkspaceChangePassword />
@@ -62,7 +62,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/workspaces/:workspaceId/add-user",
+        path: "settings/workspaces/:workspaceId/add-user",
         element: (
           <ProtectedRoute>
             <WorkspaceAddUser />

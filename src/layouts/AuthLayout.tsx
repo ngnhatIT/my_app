@@ -1,6 +1,7 @@
 // src/layouts/AuthLayout.tsx
 import { Outlet, useNavigate } from "react-router-dom";
 import { Select } from "antd";
+import { theme as antdTheme } from "antd";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";

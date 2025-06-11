@@ -3,7 +3,6 @@ import {
   Form,
   Input,
   Button,
-  Card,
   Typography,
   message,
   Select,
@@ -11,6 +10,7 @@ import {
 } from "antd";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeftOutlined, HomeOutlined } from "@ant-design/icons";
+import { theme as antdTheme } from "antd";
 
 const { Title } = Typography;
 
@@ -33,6 +33,9 @@ const UserForm: React.FC = () => {
   const [isNewUser, setIsNewUser] = useState(false);
 
   const roles = ["Admin", "Manager", "User"];
+  const {
+    token: { colorBgContainer, colorTextBase },
+  } = antdTheme.useToken();
 
   useEffect(() => {
     if (userId) {
@@ -80,12 +83,15 @@ const UserForm: React.FC = () => {
     navigate("/users");
   };
 
-  const onFinishFailed = (errorInfo: any) => {
+  const onFinishFailed = () => {
     message.error("Vui lòng kiểm tra lại các trường nhập liệu!");
   };
 
   return (
-    <div className=" bg-gray-50 p-4">
+    <div
+      className="p-4"
+      style={{ background: colorBgContainer, color: colorTextBase }}
+    >
       <Breadcrumb
         className="mb-4"
         items={[
@@ -94,8 +100,15 @@ const UserForm: React.FC = () => {
           { title: isEditing ? "Edit User" : "Add User" },
         ]}
       />
-      <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-6 justify-center mt-4">
-        <Title level={3} className="text-center mb-6 text-gray-900">
+      <div
+        className="max-w-2xl mx-auto rounded-lg p-6 shadow"
+        style={{ background: colorBgContainer, color: colorTextBase }}
+      >
+        <Title
+          level={3}
+          className="text-center mb-6"
+          style={{ color: colorTextBase }}
+        >
           {isEditing ? "Chỉnh sửa Người dùng" : "Thêm Người dùng"}
         </Title>
         <Form
@@ -103,7 +116,6 @@ const UserForm: React.FC = () => {
           form={form}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
-          className="space-y-6"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Form.Item
@@ -111,14 +123,14 @@ const UserForm: React.FC = () => {
               name="lastname"
               rules={[{ required: true, message: "Vui lòng nhập họ!" }]}
             >
-              <Input placeholder="Nhập họ" size="large" className="w-full" />
+              <Input placeholder="Nhập họ" size="large" />
             </Form.Item>
             <Form.Item
               label="Tên"
               name="firstname"
               rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
             >
-              <Input placeholder="Nhập tên" size="large" className="w-full" />
+              <Input placeholder="Nhập tên" size="large" />
             </Form.Item>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -134,11 +146,7 @@ const UserForm: React.FC = () => {
                 { min: 3, message: "Tên đăng nhập phải có ít nhất 3 ký tự!" },
               ]}
             >
-              <Input
-                placeholder="Nhập tên đăng nhập"
-                size="large"
-                className="w-full"
-              />
+              <Input placeholder="Nhập tên đăng nhập" size="large" />
             </Form.Item>
             <Form.Item
               label="Email"
@@ -147,20 +155,19 @@ const UserForm: React.FC = () => {
                 {
                   required: true,
                   type: "email",
-                  message: "Vui lòng nhập email hợp lệ!",
+                  message: "Email không hợp lệ!",
                 },
               ]}
             >
-              <Input placeholder="Nhập email" size="large" className="w-full" />
+              <Input placeholder="Nhập email" size="large" />
             </Form.Item>
           </div>
           <Form.Item
             label="Vai trò"
             name="role"
             rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
-            className="col-span-full"
           >
-            <Select placeholder="Chọn vai trò" size="large" className="w-full">
+            <Select placeholder="Chọn vai trò" size="large">
               {roles.map((role) => (
                 <Select.Option key={role} value={role}>
                   {role}
@@ -178,11 +185,7 @@ const UserForm: React.FC = () => {
                   { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự!" },
                 ]}
               >
-                <Input.Password
-                  placeholder="Nhập mật khẩu"
-                  size="large"
-                  className="w-full"
-                />
+                <Input.Password placeholder="Nhập mật khẩu" size="large" />
               </Form.Item>
               <Form.Item
                 label="Xác nhận mật khẩu"
@@ -200,15 +203,11 @@ const UserForm: React.FC = () => {
                   }),
                 ]}
               >
-                <Input.Password
-                  placeholder="Nhập lại mật khẩu"
-                  size="large"
-                  className="w-full"
-                />
+                <Input.Password placeholder="Nhập lại mật khẩu" size="large" />
               </Form.Item>
             </div>
           )}
-          <Form.Item className="col-span-full">
+          <Form.Item>
             <Button
               type="primary"
               htmlType="submit"

@@ -1,0 +1,81 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "alice",
+      "email": "alice@example.com",
+      "role": "admin",
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "username": "bob",
+      "email": "bob@example.com",
+      "role": "manager",
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "username": "carol",
+      "email": "carol@example.com",
+      "role": "user",
+      "status": "inactive"
+    },
+    {
+      "id": 4,
+      "username": "carol",
+      "email": "carol@example.com",
+      "role": "user",
+      "status": "inactive"
+    },
+    {
+      "id": 5,
+      "username": "carol",
+      "email": "carol@example.com",
+      "role": "user",
+      "status": "inactive"
+    },
+    {
+      "id": 6,
+      "username": "carol",
+      "email": "carol@example.com",
+      "role": "user",
+      "status": "inactive"
+    }
+  ],
+  "workspaces": [
+    {
+      "id": 1,
+      "name": "Workspace A",
+      "owner": "admin@example.com",
+      "users": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Workspace B",
+      "owner": "mod@example.com",
+      "users": [
+        3
+      ]
+    }
+  ],
+  "googlesheets": [
+    {
+      "id": 1,
+      "name": "Marketing Plan",
+      "createdAt": "2024-06-01",
+      "owner": "alice@example.com",
+      "googleSheetUrl": "https://docs.google.com/spreadsheets/d/1co6PebTFKZJsbIhVTYZutF51xugeebRNKqHXoek39Ok/edit?rm=demo"
+    },
+    {
+      "id": 2,
+      "name": "Finance Tracker",
+      "createdAt": "2024-05-15",
+      "owner": "bob@example.com",
+      "googleSheetUrl": "https://docs.google.com/spreadsheets/d/1co6PebTFKZJsbIhVTYZutF51xugeebRNKqHXoek39Ok/edit?gid=0#gid=0"
+    }
+  ]
+}
