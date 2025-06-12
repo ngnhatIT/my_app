@@ -16,8 +16,6 @@ import {
   PlusOutlined,
   ArrowLeftOutlined,
   LoadingOutlined,
-  EyeInvisibleOutlined,
-  EyeOutlined,
 } from "@ant-design/icons";
 
 const { Title } = Typography;

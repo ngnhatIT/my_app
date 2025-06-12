@@ -1,45 +1,68 @@
-// src/hooks/useFakeApi.ts
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:4000"; // tuỳ chỉnh nếu cần
+const API_BASE_URL = "http://localhost:4000";
+
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  headers: { "Content-Type": "application/json" },
+});
 
 export const useFakeApi = <T>(endpoint: string) => {
   const [data, setData] = useState<T[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<unknown>(null);
 
   const refetch = useCallback(() => {
     setLoading(true);
-    axios
-      .get(`${API_BASE_URL}/${endpoint}`)
+    axiosInstance
+      .get<T[]>(`/${endpoint}`)
       .then((res) => setData(res.data))
-      .catch((err) => setError(err))
+      .catch((err) => setError(err.message ?? err))
       .finally(() => setLoading(false));
   }, [endpoint]);
 
   useEffect(() => {
-    refetch();
-  }, [refetch]);
+    let isMounted = true;
+    setLoading(true);
 
-  // POST
-  const createItem = async (item: Partial<T>) => {
-    const res = await axios.post(`${API_BASE_URL}/${endpoint}`, item);
+    axiosInstance
+      .get<T[]>(`/${endpoint}`)
+      .then((res) => {
+        if (isMounted) setData(res.data);
+      })
+      .catch((err) => {
+        if (isMounted) setError(err.message ?? err);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [endpoint]);
+
+  const createItem = async (item: Partial<T>): Promise<T> => {
+    const res = await axiosInstance.post<T>(`/${endpoint}`, item);
     setData((prev) => [...prev, res.data]);
     return res.data;
   };
 
-  // PUT
-  const updateItem = async (id: string, item: Partial<T>) => {
-    const res = await axios.put(`${API_BASE_URL}/${endpoint}/${id}`, item);
+  const updateItem = async (id: string, item: Partial<T>): Promise<T> => {
+    const res = await axiosInstance.put<T>(`/${endpoint}/${id}`, item);
     setData((prev) => prev.map((d: any) => (d.id === id ? res.data : d)));
     return res.data;
   };
 
-  // DELETE
-  const deleteItem = async (id: string) => {
-    await axios.delete(`${API_BASE_URL}/${endpoint}/${id}`);
+  const deleteItem = async (id: string): Promise<void> => {
+    await axiosInstance.delete(`/${endpoint}/${id}`);
     setData((prev) => prev.filter((d: any) => d.id !== id));
+  };
+
+  const login = async (credentials: { username: string; password: string }): Promise<{ access_token: string; user: any }> => {
+    const res = await axiosInstance.post("/login", credentials);
+    return res.data;
   };
 
   return {
@@ -51,5 +74,6 @@ export const useFakeApi = <T>(endpoint: string) => {
     createItem,
     updateItem,
     deleteItem,
+    login,
   };
 };

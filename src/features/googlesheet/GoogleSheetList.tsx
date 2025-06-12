@@ -1,27 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Table,
-  Space,
-  Button,
-  Tooltip,
-  theme as antdTheme,
-  Typography,
-  Spin,
-} from "antd";
+import { Table, Space, Button, Tooltip, theme as antdTheme, Spin } from "antd";
 import {
   EyeOutlined,
   EditOutlined,
-  PlusOutlined,
   FullscreenOutlined,
 } from "@ant-design/icons";
 import PageHeader from "../../layouts/PageHeader";
 import { useFakeApi } from "../../hooks/useFakeApi";
 
 // @ts-ignore
-const { ipcRenderer } = window.require?.("electron") || {};
-
-const { Text } = Typography;
+const { ipcRenderer } = window.require?.("electron") ?? {};
 
 interface GoogleSheet {
   id: number;
@@ -106,7 +95,8 @@ const GoogleSheetList = () => {
               onClick={() => navigate(`/googlesheets/${record.id}/edit`)}
             />
           </Tooltip>
-          <Tooltip title="Phân quyền">s
+          <Tooltip title="Phân quyền">
+            s
             <Button
               type="primary"
               shape="circle"

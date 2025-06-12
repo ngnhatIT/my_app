@@ -1,11 +1,20 @@
+// src/layouts/AuthLayout.tsx
 import { Outlet, useNavigate } from "react-router-dom";
-import { Select, theme as antdTheme } from "antd";
+import { Select, theme as antdTheme, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
-import type { RootState } from "../store";
+import type { RootState } from "../app/store";
 
-const AuthLayout = () => {
+const { Title } = Typography;
+
+const languageOptions = [
+  { value: "en", label: "English" },
+  { value: "ja", label: "日本語" },
+  { value: "vi", label: "Tiếng Việt" },
+];
+
+export default function AuthLayout() {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
   const isAuthenticated = useSelector(
@@ -24,36 +33,31 @@ const AuthLayout = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col justify-center items-center"
+      className="min-h-screen flex flex-col justify-center items-center px-4"
       style={{ background: colorBgContainer, color: colorTextBase }}
     >
-      {/* Language Selector */}
-      <div className="absolute top-4 right-4">
+      {/* Language Switcher */}
+      <div className="fixed top-4 right-4 z-10">
         <Select
           value={i18n.language}
           onChange={(val) => i18n.changeLanguage(val)}
-          options={[
-            { value: "en", label: "English" },
-            { value: "ja", label: "日本語" },
-            { value: "vi", label: "Tiếng Việt" },
-          ]}
+          options={languageOptions}
+          size="small"
           style={{ width: 120 }}
         />
       </div>
 
-      {/* Auth Form Container */}
-      <div
-        className="w-full max-w-md p-6 rounded-md shadow-md"
-        style={{
-          background: colorBgContainer,
-          color: colorTextBase,
-          
-        }}
-      >
+      {/* Logo + Title */}
+      <div className="flex flex-col items-center mb-6">
+        <Title level={4} style={{ margin: 0 }}>
+          Welcome to SecureSheets
+        </Title>
+      </div>
+
+      {/* Auth Content */}
+      <div className="w-full max-w-md p-6">
         <Outlet />
       </div>
     </div>
   );
-};
-
-export default AuthLayout;
+}

@@ -17,13 +17,11 @@ const GoogleSheetForm: React.FC = () => {
   const { sheetId } = useParams<{ sheetId?: string }>();
   const [isEditing, setIsEditing] = useState(false);
 
-  // Mock owners
   const owners = ["Nguyen Van A", "Tran Thi B", "Le Van C"];
 
   useEffect(() => {
     if (sheetId) {
       setIsEditing(true);
-      // Mock data cho chỉnh sửa (thay bằng API trong thực tế)
       const sheet = {
         id: Number(sheetId),
         name: "Budget 2024",
@@ -41,7 +39,7 @@ const GoogleSheetForm: React.FC = () => {
     navigate("/googlesheets");
   };
 
-  const onFinishFailed = (errorInfo: any) => {
+  const onFinishFailed = () => {
     message.error("Vui lòng kiểm tra lại các trường nhập liệu!");
   };
 

@@ -11,11 +11,9 @@ import {
   Breadcrumb,
 } from "antd";
 import { useEffect, useState } from "react";
-import DeviceDetailModal from "../../components/DeviceDetailModel";
-import ResetDeviceModal from "../../components/ResetDeviceModal";
-
-import dayjs from "dayjs";
-import { useFakeApi } from "../../hooks/useFakeApi";
+import { useFakeApi } from "../../../hooks/useFakeApi";
+import ResetDeviceModal from "../../../components/ResetDeviceModal";
+import DeviceDetailModal from "../../../components/DeviceDetailModel";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;

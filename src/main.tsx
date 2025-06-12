@@ -2,15 +2,15 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { Provider, useSelector } from "react-redux";
-import { persistor, store } from "./store/index";
-import router from "./routes/index";
+
 import "./i18n/i18n";
 
 import "antd/dist/reset.css";
 import "./index.css";
 import { PersistGate } from "redux-persist/integration/react";
 import { ConfigProvider, theme as antdTheme } from "antd";
-import type { RootState } from "./store";
+import { store, persistor, type RootState } from "./app/store";
+import { router } from "./app/routes";
 
 const ThemedApp = () => {
   const isDark = useSelector((state: RootState) => state.theme.darkMode);

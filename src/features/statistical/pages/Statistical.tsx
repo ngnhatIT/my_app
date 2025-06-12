@@ -19,7 +19,6 @@ import {
   DownloadOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { useFakeApi } from "../../hooks/useFakeApi";
 import * as XLSX from "xlsx";
 import {
   Chart as ChartJS,
@@ -31,6 +30,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import type { ColumnType } from "antd/es/table";
+import { useFakeApi } from "../../../hooks/useFakeApi";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 

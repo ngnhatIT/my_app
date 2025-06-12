@@ -22,8 +22,8 @@ import {
 
 import WorkspaceAddUser from "./WorkspaceAddUser";
 import WorkspaceChangePassword from "./WorkspaceChangePassword";
-import { useFakeApi } from "../../hooks/useFakeApi";
-import PageHeader from "../../layouts/PageHeader";
+import { useFakeApi } from "../../../hooks/useFakeApi";
+import PageHeader from "../../../layouts/PageHeader";
 
 const { Text } = Typography;
 

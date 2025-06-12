@@ -1,4 +1,3 @@
-
 // WorkspaceAddUser.tsx (updated with suggestions)
 import { Form, Input, Button, message, Select } from "antd";
 import { useState, useEffect } from "react";
@@ -9,18 +8,27 @@ const mockUsers = [
   { id: 3, email: "user3@example.com" },
 ];
 
-const WorkspaceAddUser = ({ workspace, onClose }) => {
+interface WorkspaceAddUserProps {
+  workspace: { id: number; [key: string]: any };
+  onClose: () => void;
+}
+
+const WorkspaceAddUser = ({ workspace, onClose }: WorkspaceAddUserProps) => {
   const [form] = Form.useForm();
-  const [userOptions, setUserOptions] = useState([]);
+  const [userOptions, setUserOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
 
   useEffect(() => {
-    setUserOptions(mockUsers.map(user => ({
-      label: user.email,
-      value: user.email
-    })));
+    return setUserOptions(
+      mockUsers.map((user) => ({
+        label: user.email,
+        value: user.email,
+      }))
+    );
   }, []);
 
-  const onFinish = (values) => {
+  const onFinish = (values: any) => {
     console.log("Add user to workspace", workspace.id, values);
     message.success("Đã thêm người dùng!");
     onClose();
@@ -43,7 +51,9 @@ const WorkspaceAddUser = ({ workspace, onClose }) => {
         />
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit">Thêm</Button>
+        <Button type="primary" htmlType="submit">
+          Thêm
+        </Button>
       </Form.Item>
     </Form>
   );

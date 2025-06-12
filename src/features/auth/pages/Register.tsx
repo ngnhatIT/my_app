@@ -1,38 +1,49 @@
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input, Typography, message, theme } from "antd";
 import { useDispatch } from "react-redux";
-import { registerSuccess } from "../../features/auth/AuthSlice";
+import { registerSuccess } from "../AuthSlice";
+import { useNavigate } from "react-router-dom";
 
-
-const { Title } = Typography;
+const { Title, Link } = Typography;
 
 const Register = () => {
   const dispatch = useDispatch();
-  
-const {
+  const navigate = useNavigate();
+
+  const {
     token: { colorBgContainer, colorTextBase },
   } = theme.useToken();
 
-
-  const handleRegister = (values: { email: string; username: string; password: string; confirmPassword: string }) => {
+  const handleRegister = (values: {
+    email: string;
+    username: string;
+    password: string;
+    confirmPassword: string;
+  }) => {
     if (values.password !== values.confirmPassword) {
       message.error("Mật khẩu không khớp!");
       return;
     }
     console.log("Đăng ký:", values);
-    dispatch(registerSuccess({
-      id: "2",
-      username: values.username,
-      email: values.email,
-    }));
+    dispatch(
+      registerSuccess({
+        user: {
+          id: "1",
+          username: values.username,
+          email: values.email,
+          role: "user",
+        },
+        token: "dummy-token",
+      })
+    );
     message.success("Đăng ký thành công!");
   };
 
   return (
-   <Card
-    className="p-6 rounded-md shadow-md max-w-md w-full mx-auto mt-10"
-    style={{ background: colorBgContainer, color: colorTextBase }}
-  >
+    <Card
+      className="p-6 rounded-md shadow-md max-w-md w-full mx-auto mt-10"
+      style={{ background: colorBgContainer, color: colorTextBase }}
+    >
       <Title level={3} className="text-center text-blue-600">
         Đăng ký tài khoản
       </Title>
@@ -47,7 +58,13 @@ const {
         <Form.Item
           name="email"
           label="Email"
-          rules={[{ required: true, type: "email", message: "Vui lòng nhập email hợp lệ!" }]}
+          rules={[
+            {
+              required: true,
+              type: "email",
+              message: "Vui lòng nhập email hợp lệ!",
+            },
+          ]}
         >
           <Input prefix={<MailOutlined />} placeholder="you@example.com" />
         </Form.Item>
@@ -81,6 +98,11 @@ const {
             Đăng ký
           </Button>
         </Form.Item>
+        <div className="flex justify-between mt-4">
+          <Link onClick={() => navigate("/auth/login")}>
+            Đã có tài khoản? Đăng nhập
+          </Link>
+        </div>
       </Form>
     </Card>
   );
