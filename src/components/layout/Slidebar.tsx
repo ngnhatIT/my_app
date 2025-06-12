@@ -42,14 +42,34 @@ const Sidebar = () => {
       label: "Security",
       children: [
         {
-          key: "/settings/logs",
+          key: "/security/audit-log",
           icon: <FolderOutlined />,
           label: "Audit Logs",
         },
         {
-          key: "/settings/incidents",
+          key: "/security/statistical",
           icon: <FolderOutlined />,
-          label: "Incidents",
+          label: "Statistical",
+        },
+        {
+          key: "/security/device-ip",
+          icon: <FolderOutlined />,
+          label: "Device & IP Management",
+        },
+        {
+          key: "/security/ip-whitelist",
+          icon: <FolderOutlined />,
+          label: "Ip Whitelist",
+        },
+        {
+          key: "/security/security-incidents",
+          icon: <FolderOutlined />,
+          label: "Security Incidents",
+        },
+        {
+          key: "/security/setting-system",
+          icon: <FolderOutlined />,
+          label: "Security Incidents",
         },
       ],
     },

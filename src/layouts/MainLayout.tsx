@@ -86,7 +86,7 @@ const MainLayout = () => {
           <Switch
             checked={isDark}
             onChange={handleToggleTheme}
-            size="small"
+            size="default"
             checkedChildren={<BulbOutlined />}
             unCheckedChildren={<BulbOutlined />}
           />

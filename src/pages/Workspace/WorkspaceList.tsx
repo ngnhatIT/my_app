@@ -17,6 +17,7 @@ import {
   LockOutlined,
   EyeOutlined,
   DeleteOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 
 import WorkspaceAddUser from "./WorkspaceAddUser";
@@ -77,12 +78,13 @@ const WorkspaceList: React.FC = () => {
 
   const renderUserAvatars = (workspace: Workspace) => {
     const userObjects = workspace.users
-      .map((id) => users.find((u: any) => u.id === id))
+      .map((id) => users.find((u: any) => String(u.id) === String(id)))
       .filter(Boolean) as User[];
 
-    const maxDisplay = 5;
-    const visible = userObjects.slice(0, maxDisplay);
-    const extra = userObjects.length - maxDisplay;
+    const maxDisplay = 4;
+    const visible =
+      userObjects.length > maxDisplay ? userObjects.slice(0, 3) : userObjects;
+    const extra = userObjects.length > maxDisplay ? userObjects.length - 3 : 0;
 
     return (
       <Space size="small">
@@ -134,6 +136,12 @@ const WorkspaceList: React.FC = () => {
             <Button
               icon={<LockOutlined />}
               onClick={() => openModal(record, "changePassword")}
+            />
+          </Tooltip>
+          <Tooltip title="Thay đổi thông tin">
+            <Button
+              icon={<EditOutlined />}
+              onClick={() => openModal(record, "addUser")}
             />
           </Tooltip>
         </Space>

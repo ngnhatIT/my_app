@@ -19,6 +19,13 @@ import GoogleSheetView from "../pages/GoogleSheet/GoogleSheetView";
 import WorkspaceChangePassword from "../pages/Workspace/WorkspaceChangePassword";
 import OtpForm from "../pages/Auth/OtpForm";
 import WorkspaceAddUser from "../pages/Workspace/WorkspaceAddUser";
+import AuditLog from "../pages/Security/AuditLog";
+import Statistical from "../pages/Security/Statistical";
+import DeviceIpManagement from "../pages/Security/DeviceIP";
+import IPWhitelistSetting from "../pages/Security/SettupIp";
+import SecurityIncidents from "../pages/Security/SecurityIncidents";
+
+import SystemSettings from "../pages/Security/SystemSetting";
 
 const router = createBrowserRouter([
   {
@@ -57,7 +64,10 @@ const router = createBrowserRouter([
         path: "settings/workspaces/:workspaceId/change-password",
         element: (
           <ProtectedRoute>
-            <WorkspaceChangePassword workspace={undefined} onClose={undefined} />
+            <WorkspaceChangePassword
+              workspace={undefined}
+              onClose={undefined}
+            />
           </ProtectedRoute>
         ),
       },
@@ -130,6 +140,54 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <GoogleSheetView />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/security/audit-log",
+        element: (
+          <ProtectedRoute>
+            <AuditLog />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/security/statistical",
+        element: (
+          <ProtectedRoute>
+            <Statistical />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/security/device-ip",
+        element: (
+          <ProtectedRoute>
+            <DeviceIpManagement />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/security/ip-whitelist",
+        element: (
+          <ProtectedRoute>
+            <IPWhitelistSetting />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/security/security-incidents",
+        element: (
+          <ProtectedRoute>
+            <SecurityIncidents />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/security/setting-system",
+        element: (
+          <ProtectedRoute>
+            <SystemSettings />
           </ProtectedRoute>
         ),
       },

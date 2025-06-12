@@ -1,42 +1,42 @@
 {
   "users": [
     {
-      "id": "1",
+      "id": 1,
       "username": "alice",
       "email": "alice@example.com",
       "role": "admin",
       "status": "active"
     },
     {
-      "id": "2",
+      "id": 2,
       "username": "bob",
       "email": "bob@example.com",
       "role": "manager",
       "status": "active"
     },
     {
-      "id": "3",
+      "id": 3,
       "username": "carol",
       "email": "carol@example.com",
       "role": "user",
       "status": "inactive"
     },
     {
-      "id": "4",
+      "id": 4,
       "username": "carol",
       "email": "carol@example.com",
       "role": "user",
       "status": "inactive"
     },
     {
-      "id": "5",
+      "id": 5,
       "username": "carol",
       "email": "carol@example.com",
       "role": "user",
       "status": "inactive"
     },
     {
-      "id": "6",
+      "id": 6,
       "username": "carol",
       "email": "carol@example.com",
       "role": "user",
@@ -45,21 +45,16 @@
   ],
   "workspaces": [
     {
-      "id": "1",
+      "id": 1,
       "name": "Workspace A",
       "owner": "admin@example.com",
-      "users": [
-        1,
-        2
-      ]
+      "users": [1, 2, 3, 4, 5]
     },
     {
-      "id": "2",
+      "id": 2,
       "name": "Workspace B",
       "owner": "mod@example.com",
-      "users": [
-        3
-      ]
+      "users": [3]
     }
   ],
   "googlesheets": [
@@ -81,12 +76,12 @@
   "permissions": [
     {
       "id": "1",
-      "sheetName": "Marketing Plan",
+      "sheetName": "Kế hoạch dự án Retail",
       "userId": 1,
-      "username": "alice",
+      "username": "nk_nhat",
       "permissions": {
-        "edit": false,
-        "view": false,
+        "edit": true,
+        "view": true,
         "comment": false,
         "download": false,
         "export": true,
@@ -95,9 +90,9 @@
     },
     {
       "id": "2",
-      "sheetName": "Marketing Plan",
+      "sheetName": "Kế hoạch dự án Retail",
       "userId": 2,
-      "username": "bob",
+      "username": "nhat_nk",
       "permissions": {
         "edit": true,
         "view": true,
@@ -106,20 +101,142 @@
         "export": true,
         "import": false
       }
+    }
+  ],
+  "auditlogs": [
+    {
+      "id": 1,
+      "workspace": "Workspace A",
+      "user": "alice",
+      "ipAddress": "192.168.1.10",
+      "actionTime": "2024-06-10T14:23:00Z",
+      "action": "edit",
+      "detail": "Đã chỉnh sửa nội dung ô A1"
+    },
+    {
+      "id": 2,
+      "workspace": "Workspace B",
+      "user": "bob",
+      "ipAddress": "192.168.1.11",
+      "actionTime": "2024-06-11T09:15:20Z",
+      "action": "comment",
+      "detail": "Đã thêm bình luận vào ô C2"
+    }
+  ],
+
+  "statistics": [
+    {
+      "id": 1,
+      "workspace": "Marketing Team",
+      "sheetCount": 12,
+      "userCount": 5,
+      "weeklyAccessCount": 234,
+      "weeklySummary": "Hoạt động ổn định, tăng nhẹ 12% so với tuần trước.",
+      "accessPerDay": [
+        { "day": "Thứ 2", "count": 34 },
+        { "day": "Thứ 3", "count": 42 },
+        { "day": "Thứ 4", "count": 38 },
+        { "day": "Thứ 5", "count": 52 },
+        { "day": "Thứ 6", "count": 49 },
+        { "day": "Thứ 7", "count": 10 },
+        { "day": "CN", "count": 9 }
+      ]
+    }
+  ],
+  "devices": [
+    {
+      "id": "1",
+      "user": "nguyenkhanhnhat0108@gmail.com",
+      "ipAddress": "123.123.10.21",
+      "macAddress": "00:1A:2B:3C:4D:5E",
+      "device": "MacBook Pro",
+      "os": "macOS Sonoma",
+      "location": "Tokyo, Japan",
+      "deviceId": "dev-001",
+      "isPrimaryDevice": true,
+      "lastActive": "2025-06-12 10:21:01"
+    },
+    {
+      "id": "2",
+      "user": "nguyenkhanhnhat0108@gmail.com",
+      "ipAddress": "14.224.5.19",
+      "macAddress": "00:1A:2B:3C:4D:XX",
+      "device": "MacBook Air M2",
+      "os": "macOS Ventura",
+      "location": "Ho Chi Minh, Vietnam",
+      "deviceId": "dev-002",
+      "isPrimaryDevice": false,
+      "lastActive": "2025-06-10 08:10:45"
     },
     {
       "id": "3",
-      "sheetName": "Finance Tracker",
-      "userId": 3,
-      "username": "carol",
-      "permissions": {
-        "edit": false,
-        "view": false,
-        "comment": false,
-        "download": false,
-        "export": false,
-        "import": false
-      }
+      "user": "testuser@example.com",
+      "ipAddress": "10.0.2.55",
+      "macAddress": "F8:27:93:12:34:AA",
+      "device": "Dell Latitude",
+      "os": "Windows 11",
+      "location": "Da Nang, Vietnam",
+      "deviceId": "dev-003",
+      "isPrimaryDevice": true,
+      "lastActive": "2025-06-11 15:45:22"
+    }
+  ],
+  "whitelist": [
+    {
+      "id": "1",
+      "ip": "123.123.0.0/16",
+      "type": "CIDR",
+      "description": "Dải IP công ty Tokyo",
+      "createdAt": "2024-12-01"
+    },
+    {
+      "id": "2",
+      "ip": "10.0.0.0/16",
+      "type": "VPN",
+      "description": "VPN nội bộ",
+      "createdAt": "2024-12-05"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "1",
+      "user": "nguyenkhanhnhat0108@gmail.com",
+      "type": "FAILED_LOGIN",
+      "description": "Đăng nhập sai số lần quá quy định (5 lần)",
+      "severity": "MEDIUM",
+      "timestamp": "2025-06-12T08:15:00",
+      "resolved": false
+    },
+    {
+      "id": "2",
+      "user": "admin@example.com",
+      "type": "MASS_DOWNLOAD",
+      "description": "Tải 50 files trong 1 phút",
+      "severity": "HIGH",
+      "timestamp": "2025-06-11T22:10:00",
+      "resolved": false
+    },
+    {
+      "id": "3",
+      "user": "staff@example.com",
+      "type": "OUTSIDE_ACCESS",
+      "description": "Truy cập lúc 03:21 sáng",
+      "severity": "LOW",
+      "timestamp": "2025-06-10T03:21:00",
+      "resolved": true
+    }
+  ],
+  "settings": [
+    {
+      "id": "system-config",
+      "passwordExpirationDays": 90,
+      "maxFailedLoginAttempts": 5,
+      "autoLogoutMinutes": 60,
+      "smtpServer": "smtp.example.com",
+      "smtpPort": 587,
+      "alertEmail": "security@example.com",
+      "theme": "light",
+      "language": "vi"
     }
   ]
 }
