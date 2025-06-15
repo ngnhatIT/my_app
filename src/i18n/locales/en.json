@@ -1,9 +1,53 @@
 {
   "login": {
-    "title": "Login to the System",
+    "title": "Login",
+    "submit": "Sign In",
     "username": "Username",
     "password": "Password",
-    "submit": "Login",
-    "error": "Invalid username or password!"
+    "usernameRequired": "Please enter your username",
+    "passwordRequired": "Please enter your password",
+    "register": "Register",
+    "forgotPassword": "Forgot Password?",
+    "success": "Login successful",
+    "successTitle": "Success",
+    "failed": "Login failed",
+    "failedTitle": "Login Failed",
+    "invalidCredentials": "Invalid username or password",
+    "networkError": "Cannot connect to the server. Please check your internet or backend."
+  },
+  "register": {
+    "title": "Register Account",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Register",
+    "toLogin": "Already have an account? Login",
+    "usernameRequired": "Please enter your username!",
+    "emailRequired": "Please enter a valid email!",
+    "passwordRequired": "Please enter your password!",
+    "confirmPasswordRequired": "Please confirm your password!",
+    "passwordsMismatch": "Passwords do not match!",
+    "successTitle": "Registration Successful",
+    "success": "Please verify your email via OTP.",
+    "failedTitle": "Registration Failed",
+    "failed": "Registration failed.",
+    "emailInUse": "This email is already registered."
+  },
+  "error": {
+    "forbidden": "Access Denied",
+    "noPermission": "You do not have permission to access this resource.",
+    "notFound": "Not Found",
+    "resourceMissing": "The requested resource was not found.",
+    "serverError": "Server Error",
+    "tryAgainLater": "Something went wrong. Please try again later."
+  },
+  "network": {
+    "errorTitle": "Network Error",
+    "unreachable": "Cannot connect to server. Please check your connection."
+  },
+  "auth": {
+    "sessionExpired": "Session Expired",
+    "pleaseLoginAgain": "Please log in again to continue."
   }
 }

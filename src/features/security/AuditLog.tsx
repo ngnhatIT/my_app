@@ -3,22 +3,20 @@ import {
   Table,
   Input,
   DatePicker,
-  Row,
-  Col,
   Button,
-  Typography,
-  Space,
   Modal,
   Select,
+  Typography,
   theme as antdTheme,
+  Breadcrumb,
 } from "antd";
 import dayjs from "dayjs";
 import { useFakeApi } from "../../hooks/useFakeApi";
-import PageHeader from "../../layouts/PageHeader"; // Breadcrumb & header component
+import PageHeader from "../../layouts/PageHeader";
 
-const { Text } = Typography;
 const { RangePicker } = DatePicker;
 const { Option } = Select;
+const { Text } = Typography;
 
 interface AuditLog {
   id: number;
@@ -30,50 +28,26 @@ interface AuditLog {
   detail: string;
 }
 
-const ACTION_OPTIONS = [
-  "edit",
-  "view",
-  "comment",
-  "download",
-  "export",
-  "import",
-];
+const ACTION_OPTIONS = ["edit", "view", "comment", "download", "export", "import"];
 
-const AuditLog: React.FC = () => {
+export default function AuditLog() {
   const {
     token: { colorBgContainer, colorTextBase },
   } = antdTheme.useToken();
 
   const { data: logs, loading } = useFakeApi<AuditLog>("auditlogs");
 
-  const [searchParams, setSearchParams] = useState({
+  const [filters, setFilters] = useState({
     workspace: "",
     user: "",
     action: "",
     dateRange: null as [dayjs.Dayjs, dayjs.Dayjs] | null,
   });
-
-  const [filters, setFilters] = useState<typeof searchParams>(searchParams);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const handleSearch = () => setFilters(searchParams);
-
-  const handleClear = () => {
-    const empty = {
-      workspace: "",
-      user: "",
-      action: "",
-      dateRange: null,
-    };
-    setSearchParams(empty);
-    setFilters(empty);
-  };
-
-  const showDetails = (record: AuditLog) => {
-    setSelectedLog(record);
-    setIsDetailModalOpen(true);
-  };
+  const handleClear = () =>
+    setFilters({ workspace: "", user: "", action: "", dateRange: null });
 
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
@@ -89,7 +63,7 @@ const AuditLog: React.FC = () => {
       const matchDate =
         filters.dateRange && filters.dateRange.length === 2
           ? dayjs(log.actionTime).isAfter(filters.dateRange[0]) &&
-            dayjs(log.actionTime).isBefore(filters.dateRange[1])
+          dayjs(log.actionTime).isBefore(filters.dateRange[1])
           : true;
       return matchWorkspace && matchUser && matchAction && matchDate;
     });
@@ -110,128 +84,111 @@ const AuditLog: React.FC = () => {
       title: "Thao tác",
       key: "actions",
       render: (_: any, record: AuditLog) => (
-        <Button onClick={() => showDetails(record)}>Xem</Button>
+        <Button type="link" onClick={() => {
+          setSelectedLog(record);
+          setModalOpen(true);
+        }}>
+          Xem
+        </Button>
       ),
     },
   ];
 
   return (
-    <div
-      className="p-4"
-      style={{ background: colorBgContainer, color: colorTextBase }}
-    >
-      {/* Breadcrumb & Page Title */}
-      <PageHeader
-        breadcrumbPaths={[
-          { label: "Bảo mật và theo dõi" },
-          { label: "Nhật ký hệ thống" },
-        ]}
-      />
+    <div className="p-4" style={{ background: colorBgContainer, color: colorTextBase }}>
+      <Breadcrumb items={[{ title: "Trang chủ" }, { title: "Sự kiện bảo mật" }]} />
 
-      <Row gutter={[16, 12]} className="mt-4 mb-4" wrap>
-        <Col xs={24} sm={12} md={6}>
+      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-6 mb-2">
+        <div className="md:col-span-2">
           <Input
             placeholder="Tìm theo Workspace"
-            value={searchParams.workspace}
+            value={filters.workspace}
             onChange={(e) =>
-              setSearchParams((prev) => ({
-                ...prev,
-                workspace: e.target.value,
-              }))
+              setFilters((prev) => ({ ...prev, workspace: e.target.value }))
             }
           />
-        </Col>
-        <Col xs={24} sm={12} md={6}>
+        </div>
+
+        <div className="md:col-span-2">
           <Input
             placeholder="Tìm theo Người dùng"
-            value={searchParams.user}
+            value={filters.user}
             onChange={(e) =>
-              setSearchParams((prev) => ({ ...prev, user: e.target.value }))
+              setFilters((prev) => ({ ...prev, user: e.target.value }))
             }
           />
-        </Col>
-        <Col xs={24} sm={12} md={6}>
+        </div>
+
+        <div className="md:col-span-1">
           <Select
             placeholder="Tìm theo Hành động"
-            value={searchParams.action || undefined}
             allowClear
+            value={filters.action || undefined}
             onChange={(value) =>
-              setSearchParams((prev) => ({ ...prev, action: value || "" }))
+              setFilters((prev) => ({ ...prev, action: value || "" }))
             }
-            style={{ width: "100%" }}
+            className="w-full"
           >
-            {ACTION_OPTIONS.map((action) => (
-              <Option key={action} value={action}>
-                {action.charAt(0).toUpperCase() + action.slice(1)}
+            {ACTION_OPTIONS.map((a) => (
+              <Option key={a} value={a}>
+                {a.charAt(0).toUpperCase() + a.slice(1)}
               </Option>
             ))}
           </Select>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
+        </div>
+
+        <div className="md:col-span-2">
           <RangePicker
-            style={{ width: "100%" }}
-            value={searchParams.dateRange}
+            className="w-full"
+            value={filters.dateRange}
             onChange={(range) => {
-              const validRange =
-                range && range.length === 2 && range[0] && range[1]
-                  ? ([range[0], range[1]] as [dayjs.Dayjs, dayjs.Dayjs])
-                  : null;
-              setSearchParams((prev) => ({ ...prev, dateRange: validRange }));
+              const valid =
+                range && range.length === 2 && range[0] && range[1];
+              setFilters((prev: any) => ({
+                ...prev,
+                dateRange: valid ? [range[0], range[1]] : null,
+              }));
             }}
           />
-        </Col>
-        <Col xs={24} className="text-right">
-          <Space>
-            <Button type="primary" onClick={handleSearch}>
-              Tìm kiếm
-            </Button>
-            <Button onClick={handleClear}>Xoá điều kiện</Button>
-          </Space>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
-      <Table
-        rowKey="id"
-        loading={loading}
-        columns={columns}
-        dataSource={filteredLogs}
-        pagination={{ pageSize: 10 }}
-        bordered
-        scroll={{ x: true }}
-      />
+
+      <div className="flex justify-end gap-2 mb-4">
+        <Button type="primary">Tìm kiếm</Button>
+        <Button onClick={handleClear}>Xoá điều kiện</Button>
+      </div>
+
+      <div className="overflow-x-auto">
+        <Table
+          rowKey="id"
+          loading={loading}
+          columns={columns}
+          dataSource={filteredLogs}
+          pagination={{ pageSize: 10 }}
+          
+          scroll={{ x: true }}
+          locale={{ emptyText: "Không có dữ liệu" }}
+        />
+      </div>
 
       <Modal
         title="Chi tiết hành động"
-        open={isDetailModalOpen}
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
         footer={null}
-        onCancel={() => setIsDetailModalOpen(false)}
       >
         {selectedLog && (
-          <div style={{ lineHeight: "1.8" }}>
-            <p>
-              <strong>Workspace:</strong> {selectedLog.workspace}
-            </p>
-            <p>
-              <strong>Người dùng:</strong> {selectedLog.user}
-            </p>
-            <p>
-              <strong>IP:</strong> {selectedLog.ipAddress}
-            </p>
-            <p>
-              <strong>Thời gian:</strong>{" "}
-              {dayjs(selectedLog.actionTime).format("YYYY-MM-DD HH:mm:ss")}
-            </p>
-            <p>
-              <strong>Hành động:</strong> {selectedLog.action}
-            </p>
-            <p>
-              <strong>Chi tiết:</strong> {selectedLog.detail}
-            </p>
+          <div className="space-y-2">
+            <p><Text strong>Workspace:</Text> {selectedLog.workspace}</p>
+            <p><Text strong>Người dùng:</Text> {selectedLog.user}</p>
+            <p><Text strong>IP:</Text> {selectedLog.ipAddress}</p>
+            <p><Text strong>Thời gian:</Text> {dayjs(selectedLog.actionTime).format("YYYY-MM-DD HH:mm:ss")}</p>
+            <p><Text strong>Hành động:</Text> {selectedLog.action}</p>
+            <p><Text strong>Chi tiết:</Text> {selectedLog.detail}</p>
           </div>
         )}
       </Modal>
     </div>
   );
-};
-
-export default AuditLog;
+}

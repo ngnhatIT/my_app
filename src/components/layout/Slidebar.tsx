@@ -1,76 +1,55 @@
-// components/layout/Slidebar.tsx
-import { Layout, Menu } from "antd";
-import { theme as antdTheme } from "antd";
+// Sidebar.tsx
+import { Layout, Menu, Drawer } from "antd";
 import {
   HomeOutlined,
   SettingOutlined,
   UserOutlined,
   FileTextOutlined,
-  FolderOutlined,
-  DesktopOutlined,
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
+  FileSearchOutlined,
+  BarChartOutlined,
+  GlobalOutlined,
+  AlertOutlined,
+  LockOutlined,
 } from "@ant-design/icons";
+import { theme as antdTheme } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
 
 const { Sider } = Layout;
 
-const Sidebar = () => {
+const Sidebar = ({
+  collapsed,
+  isMobile,
+  drawerVisible,
+  setDrawerVisible,
+}: {
+  collapsed: boolean;
+  setCollapsed: (v: boolean) => void;
+  isMobile: boolean;
+  drawerVisible: boolean;
+  setDrawerVisible: (v: boolean) => void;
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
+
   const {
     token: { colorBgContainer, colorTextBase },
   } = antdTheme.useToken();
 
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
-  };
-
   const menuItems = [
     { key: "/", icon: <HomeOutlined />, label: "Dashboard" },
     { key: "/users", icon: <UserOutlined />, label: "Users" },
-    {
-      key: "/googlesheets",
-      icon: <FileTextOutlined />,
-      label: "Google Sheets",
-    },
+    { key: "/googlesheets", icon: <FileTextOutlined />, label: "Google Sheets" },
     {
       key: "security",
-      icon: <DesktopOutlined />,
+      icon: <LockOutlined />,
       label: "Security",
       children: [
-        {
-          key: "/security/audit-log",
-          icon: <FolderOutlined />,
-          label: "Audit Logs",
-        },
-        {
-          key: "/security/statistical",
-          icon: <FolderOutlined />,
-          label: "Statistical",
-        },
-        {
-          key: "/security/device-ip",
-          icon: <FolderOutlined />,
-          label: "Device & IP Management",
-        },
-        {
-          key: "/security/ip-whitelist",
-          icon: <FolderOutlined />,
-          label: "Ip Whitelist",
-        },
-        {
-          key: "/security/security-incidents",
-          icon: <FolderOutlined />,
-          label: "Security Incidents",
-        },
-        {
-          key: "/security/setting-system",
-          icon: <FolderOutlined />,
-          label: "Security Incidents",
-        },
+        { key: "/security/audit-log", icon: <FileSearchOutlined />, label: "Audit Logs" },
+        { key: "/security/statistical", icon: <BarChartOutlined />, label: "Statistical" },
+        { key: "/security/device-ip", icon: <GlobalOutlined />, label: "Device & IP Management" },
+        { key: "/security/ip-whitelist", icon: <GlobalOutlined />, label: "IP Whitelist" },
+        { key: "/security/security-incidents", icon: <AlertOutlined />, label: "Security Incidents" },
+        { key: "/security/setting-system", icon: <SettingOutlined />, label: "System Settings" },
       ],
     },
     {
@@ -78,57 +57,66 @@ const Sidebar = () => {
       icon: <SettingOutlined />,
       label: "System",
       children: [
-        {
-          key: "/settings/workspaces",
-          icon: <FolderOutlined />,
-          label: "Workspaces",
-        },
-        {
-          key: "/settings/settings",
-          icon: <FolderOutlined />,
-          label: "Settings",
-        },
-        {
-          key: "/settings/devices",
-          icon: <FolderOutlined />,
-          label: "Devices & IP",
-        },
+        { key: "/settings/workspaces", icon: <FileTextOutlined />, label: "Workspaces" },
+        { key: "/settings/settings", icon: <SettingOutlined />, label: "Settings" },
+        { key: "/settings/devices", icon: <GlobalOutlined />, label: "Devices & IP" },
       ],
     },
   ];
 
-  return (
-    <Sider
-      collapsed={collapsed}
-      breakpoint="lg"
-      onBreakpoint={(broken) => setCollapsed(broken)}
-      collapsedWidth={60}
-      style={{
-        height: "100%",
-        overflow: "auto",
-        background: colorBgContainer,
-        color: colorTextBase,
-      }}
-    >
-      <div
-        className="p-4 flex items-center justify-between"
-        style={{ color: colorTextBase }}
-      >
-        {!collapsed && (
-          <span className="font-semibold text-lg">Sheet Manager</span>
-        )}
-        <span onClick={toggleCollapsed} className="cursor-pointer ml-auto">
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+  const menuContent = (
+    <>
+      <div className="flex items-center justify-between p-4">
+        <span className="text-lg font-semibold text-primary">
+          {!collapsed || isMobile ? "Sheet Manager" : "🗂️"}
         </span>
       </div>
       <Menu
         mode="inline"
         selectedKeys={[location.pathname]}
         defaultOpenKeys={collapsed ? [] : ["security", "system"]}
-        onClick={({ key }) => navigate(key)}
+        onClick={({ key }) => {
+          navigate(key);
+          if (isMobile) setDrawerVisible(false);
+        }}
         items={menuItems}
-        style={{ background: colorBgContainer, color: colorTextBase }}
       />
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer
+        open={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
+        width={240}
+        placement="left"
+        closable={false}
+        bodyStyle={{ padding: 0 }}
+      >
+        {menuContent}
+      </Drawer>
+    );
+  }
+
+  return (
+    <Sider
+      width={240}
+      collapsed={collapsed}
+      collapsedWidth={60}
+      style={{
+        height: "100vh",
+        overflow: "auto",
+        position: "fixed",
+        left: 0,
+        top: 0,
+        zIndex: 100,
+        transition: "all 0.2s",
+        background: colorBgContainer,
+        color: colorTextBase,
+      }}
+    >
+      {menuContent}
     </Sider>
   );
 };

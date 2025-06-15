@@ -60,8 +60,13 @@ export const useFakeApi = <T>(endpoint: string) => {
     setData((prev) => prev.filter((d: any) => d.id !== id));
   };
 
-  const login = async (credentials: { username: string; password: string }): Promise<{ access_token: string; user: any }> => {
-    const res = await axiosInstance.post("/login", credentials);
+  const login = async (
+    credentials: { username: string; password: string }
+  ): Promise<{ access_token: string; user: any }> => {
+    const { username, password } = credentials;
+    const res = await axiosInstance.get(`/login`, {
+      params: { username, password },
+    });
     return res.data;
   };
 

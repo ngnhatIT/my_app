@@ -1,17 +1,14 @@
 // src/layouts/AuthLayout.tsx
 import { Outlet, useNavigate } from "react-router-dom";
-import { Select, theme as antdTheme, Typography } from "antd";
+import { Select, theme as antdTheme } from "antd";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import type { RootState } from "../app/store";
 
-const { Title } = Typography;
-
 const languageOptions = [
   { value: "en", label: "English" },
   { value: "ja", label: "日本語" },
-  { value: "vi", label: "Tiếng Việt" },
 ];
 
 export default function AuthLayout() {
@@ -45,13 +42,6 @@ export default function AuthLayout() {
           size="small"
           style={{ width: 120 }}
         />
-      </div>
-
-      {/* Logo + Title */}
-      <div className="flex flex-col items-center mb-6">
-        <Title level={4} style={{ margin: 0 }}>
-          Welcome to SecureSheets
-        </Title>
       </div>
 
       {/* Auth Content */}

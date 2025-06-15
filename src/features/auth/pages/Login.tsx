@@ -1,122 +1,128 @@
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { useEffect } from "react";
 import {
   Button,
   Card,
   Form,
   Input,
   Typography,
-  message,
   theme,
-  Spin,
-  type InputRef,
+  notification,
 } from "antd";
-import { useDispatch } from "react-redux";
-
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
-import { useFakeApi } from "../../../hooks/useFakeApi";
-import { loginSuccess } from "../AuthSlice";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-const { Title, Link } = Typography;
+import { useAuthService } from "../services/AuthService";
+import type { AppDispatch, RootState } from "../../../app/store";
+import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
+import { loginSuccess, setAuthStatus } from "../AuthSlice";
 
-export default function LoginPage() {
+const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const { loginUser } = useAuthService();
+  const status = useSelector((state: RootState) => state.auth.status);
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
-  const { t } = useTranslation("auth");
-  const usernameInputRef = useRef<InputRef>(null);
 
   const {
     token: { colorBgContainer, colorTextBase },
   } = theme.useToken();
 
-  const { login } = useFakeApi("users");
-
   useEffect(() => {
-    usernameInputRef.current?.focus();
-  }, []);
+    if (status === "succeeded") {
+      notification.success({
+        message: t("login.successTitle"),
+        description: t("login.success"),
+        placement: "topRight",
+      });
+      navigate("/");
+    }
+  }, [status, navigate, t]);
 
-  const handleLogin = async (values: {
-    username: string;
-    password: string;
-  }) => {
-    if (loading) return;
-    setLoading(true);
+  const onFinish = async (values: Omit<LoginRequestDTO, "captchaToken">) => {
+    if (status === "loading") return;
+    dispatch(setAuthStatus("loading"));
 
     try {
-      const { access_token, user } = await login(values);
+      const { access_token, user } = await loginUser(values);
       dispatch(loginSuccess({ user, token: access_token }));
-      navigate("/");
     } catch (err: any) {
-      if (err?.response?.status === 401) {
-        message.error(t("invalidCredentials"));
-      } else {
-        message.error(t("loginFailed"));
-      }
-    } finally {
-      setLoading(false);
+      dispatch(setAuthStatus("failed"));
+      notification.error({
+        message: t("login.failedTitle"),
+        description:
+          err?.response?.status === 401
+            ? t("login.invalidCredentials")
+            : err?.response?.data?.message || t("login.networkError"),
+        placement: "topRight",
+      });
     }
   };
 
   return (
-    <Spin spinning={loading} tip={t("loggingIn") || "Đang đăng nhập..."}>
-      <div className="px-4 sm:px-0">
-        <Card
-          className="p-6 rounded-md shadow-md max-w-md w-full mx-auto mt-10"
-          style={{ background: colorBgContainer, color: colorTextBase }}
+    <div className="px-4 sm:px-0">
+      <Card
+        className="p-6 rounded-md shadow-md max-w-md w-full mx-auto mt-10"
+        style={{ background: colorBgContainer, color: colorTextBase }}
+      >
+        <Typography.Title level={3} className="text-center">
+          {t("login.title")}
+        </Typography.Title>
+
+        <Form
+          onFinish={onFinish}
+          form={form}
+          layout="vertical"
+          autoComplete="off"
         >
-          <Title level={3} className="text-center">
-            {t("loginTitle")}
-          </Title>
-
-          <Form
-            layout="vertical"
-            form={form}
-            onFinish={handleLogin}
-            disabled={loading}
+          <Form.Item
+            name="username"
+            rules={[{ required: true, message: t("login.usernameRequired") }]}
           >
-            <Form.Item
-              name="username"
-              label={t("username")}
-              rules={[{ required: true, message: t("usernameRequired") }]}
+            <Input
+              prefix={<UserOutlined />}
+              placeholder={t("login.username")}
+              disabled={status === "loading"}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: t("login.passwordRequired") }]}
+          >
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder={t("login.password")}
+              disabled={status === "loading"}
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              loading={status === "loading"}
+              disabled={status === "loading"}
             >
-              <Input
-                prefix={<UserOutlined />}
-                placeholder="admin"
-                ref={usernameInputRef}
-              />
-            </Form.Item>
+              {t("login.submit")}
+            </Button>
+          </Form.Item>
+        </Form>
 
-            <Form.Item
-              name="password"
-              label={t("password")}
-              rules={[{ required: true, message: t("passwordRequired") }]}
-            >
-              <Input.Password
-                prefix={<LockOutlined />}
-                placeholder="••••••••"
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit" block loading={loading}>
-                {t("loginButton")}
-              </Button>
-            </Form.Item>
-          </Form>
-
-          <div className="flex justify-between mt-4">
-            <Link onClick={() => navigate("/auth/register")}>
-              {t("registerLink")}
-            </Link>
-            <Link onClick={() => navigate("/auth/forgot-password")}>
-              {t("forgotPasswordLink")}
-            </Link>
-          </div>
-        </Card>
-      </div>
-    </Spin>
+        <div className="flex justify-between mt-2">
+          <Button type="link" onClick={() => navigate("/auth/register")}>
+            {t("login.register")}
+          </Button>
+          <Button type="link" onClick={() => navigate("/auth/forgot-password")}>
+            {t("login.forgotPassword")}
+          </Button>
+        </div>
+      </Card>
+    </div>
   );
-}
+};
+
+export default Login;
