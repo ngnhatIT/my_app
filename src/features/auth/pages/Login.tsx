@@ -12,17 +12,18 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
 import { useAuthService } from "../services/AuthService";
 import type { AppDispatch, RootState } from "../../../app/store";
 import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
 import { loginSuccess, setAuthStatus } from "../AuthSlice";
+import { setNavigate } from "../../../api/AxiosIntance";
+import { getErrorMessage } from "../../../utils/errorUtil";
 
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { loginUser } = useAuthService();
+  const { loginUser } = useAuthService(t);
   const status = useSelector((state: RootState) => state.auth.status);
   const [form] = Form.useForm();
 
@@ -30,16 +31,13 @@ const Login = () => {
     token: { colorBgContainer, colorTextBase },
   } = theme.useToken();
 
+  // Thiết lập navigate cho axiosInstance
   useEffect(() => {
-    if (status === "succeeded") {
-      notification.success({
-        message: t("login.successTitle"),
-        description: t("login.success"),
-        placement: "topRight",
-      });
-      navigate("/");
-    }
-  }, [status, navigate, t]);
+    setNavigate(navigate);
+    return () => {
+      setNavigate(() => {});
+    };
+  }, [navigate]);
 
   const onFinish = async (values: Omit<LoginRequestDTO, "captchaToken">) => {
     if (status === "loading") return;
@@ -48,15 +46,17 @@ const Login = () => {
     try {
       const { access_token, user } = await loginUser(values);
       dispatch(loginSuccess({ user, token: access_token }));
+      notification.success({
+        message: t("login.successTitle"),
+        description: t("login.success"),
+        placement: "topLeft",
+      });
     } catch (err: any) {
       dispatch(setAuthStatus("failed"));
       notification.error({
         message: t("login.failedTitle"),
-        description:
-          err?.response?.status === 401
-            ? t("login.invalidCredentials")
-            : err?.response?.data?.message || t("login.networkError"),
-        placement: "topRight",
+        description: getErrorMessage(err, t),
+        placement: "topLeft",
       });
     }
   };

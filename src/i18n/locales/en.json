@@ -40,11 +40,8 @@
     "notFound": "Not Found",
     "resourceMissing": "The requested resource was not found.",
     "serverError": "Server Error",
-    "tryAgainLater": "Something went wrong. Please try again later."
-  },
-  "network": {
-    "errorTitle": "Network Error",
-    "unreachable": "Cannot connect to server. Please check your connection."
+    "tryAgainLater": "Something went wrong. Please try again later.",
+    "network": "Network Error"
   },
   "auth": {
     "sessionExpired": "Session Expired",

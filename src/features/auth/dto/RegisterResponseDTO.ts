@@ -6,6 +6,7 @@ export interface RegisterResponseDTO {
     role: string;
   };
   message?: string;
+  access_token : string;
 }
 
 export interface RegisterOTPResponseDTO{

@@ -5,14 +5,14 @@ interface AuthState {
   user: UserDTO | null;
   token: string | null;
   status: "idle" | "loading" | "succeeded" | "failed";
-  isAuthenticated : boolean
+  isAuthenticated: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
   token: null,
   status: "idle",
-  isAuthenticated : false
+  isAuthenticated: false,
 };
 
 const authSlice = createSlice({
@@ -34,6 +34,8 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.status = "idle";
+      state.isAuthenticated = false;
+      sessionStorage.removeItem("access_token");
     },
     setAuthStatus(state, action: PayloadAction<AuthState["status"]>) {
       state.status = action.payload;

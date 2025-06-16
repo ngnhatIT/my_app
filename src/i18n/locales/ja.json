@@ -40,11 +40,8 @@
     "notFound": "見つかりません",
     "resourceMissing": "リクエストされたリソースが見つかりませんでした。",
     "serverError": "サーバーエラー",
-    "tryAgainLater": "問題が発生しました。後でもう一度お試しください。"
-  },
-  "network": {
-    "errorTitle": "ネットワークエラー",
-    "unreachable": "サーバーに接続できません。接続を確認してください。"
+    "tryAgainLater": "問題が発生しました。後でもう一度お試しください。",
+    "network": "ネットワークエラー"
   },
   "auth": {
     "sessionExpired": "セッションの有効期限が切れました",

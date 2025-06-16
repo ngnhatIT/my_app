@@ -1,5 +1,3 @@
-// Sidebar.tsx
-import { Layout, Menu, Drawer } from "antd";
 import {
   HomeOutlined,
   SettingOutlined,
@@ -10,23 +8,29 @@ import {
   GlobalOutlined,
   AlertOutlined,
   LockOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
 } from "@ant-design/icons";
-import { theme as antdTheme } from "antd";
+import { theme as antdTheme, Layout, Menu, Drawer, Tooltip } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
+import React from "react";
 
 const { Sider } = Layout;
 
-const Sidebar = ({
-  collapsed,
-  isMobile,
-  drawerVisible,
-  setDrawerVisible,
-}: {
+type SidebarProps = {
   collapsed: boolean;
   setCollapsed: (v: boolean) => void;
   isMobile: boolean;
   drawerVisible: boolean;
   setDrawerVisible: (v: boolean) => void;
+};
+
+const Sidebar: React.FC<SidebarProps> = ({
+  collapsed,
+  setCollapsed,
+  isMobile,
+  drawerVisible,
+  setDrawerVisible,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,18 +42,46 @@ const Sidebar = ({
   const menuItems = [
     { key: "/", icon: <HomeOutlined />, label: "Dashboard" },
     { key: "/users", icon: <UserOutlined />, label: "Users" },
-    { key: "/googlesheets", icon: <FileTextOutlined />, label: "Google Sheets" },
+    {
+      key: "/googlesheets",
+      icon: <FileTextOutlined />,
+      label: "Google Sheets",
+    },
     {
       key: "security",
       icon: <LockOutlined />,
       label: "Security",
       children: [
-        { key: "/security/audit-log", icon: <FileSearchOutlined />, label: "Audit Logs" },
-        { key: "/security/statistical", icon: <BarChartOutlined />, label: "Statistical" },
-        { key: "/security/device-ip", icon: <GlobalOutlined />, label: "Device & IP Management" },
-        { key: "/security/ip-whitelist", icon: <GlobalOutlined />, label: "IP Whitelist" },
-        { key: "/security/security-incidents", icon: <AlertOutlined />, label: "Security Incidents" },
-        { key: "/security/setting-system", icon: <SettingOutlined />, label: "System Settings" },
+        {
+          key: "/security/audit-log",
+          icon: <FileSearchOutlined />,
+          label: "Audit Logs",
+        },
+        {
+          key: "/security/statistical",
+          icon: <BarChartOutlined />,
+          label: "Statistical",
+        },
+        {
+          key: "/security/device-ip",
+          icon: <GlobalOutlined />,
+          label: "Device & IP Management",
+        },
+        {
+          key: "/security/ip-whitelist",
+          icon: <GlobalOutlined />,
+          label: "IP Whitelist",
+        },
+        {
+          key: "/security/security-incidents",
+          icon: <AlertOutlined />,
+          label: "Security Incidents",
+        },
+        {
+          key: "/security/setting-system",
+          icon: <SettingOutlined />,
+          label: "System Settings",
+        },
       ],
     },
     {
@@ -57,9 +89,21 @@ const Sidebar = ({
       icon: <SettingOutlined />,
       label: "System",
       children: [
-        { key: "/settings/workspaces", icon: <FileTextOutlined />, label: "Workspaces" },
-        { key: "/settings/settings", icon: <SettingOutlined />, label: "Settings" },
-        { key: "/settings/devices", icon: <GlobalOutlined />, label: "Devices & IP" },
+        {
+          key: "/settings/workspaces",
+          icon: <FileTextOutlined />,
+          label: "Workspaces",
+        },
+        {
+          key: "/settings/settings",
+          icon: <SettingOutlined />,
+          label: "Settings",
+        },
+        {
+          key: "/settings/devices",
+          icon: <GlobalOutlined />,
+          label: "Devices & IP",
+        },
       ],
     },
   ];
@@ -70,7 +114,16 @@ const Sidebar = ({
         <span className="text-lg font-semibold text-primary">
           {!collapsed || isMobile ? "Sheet Manager" : "🗂️"}
         </span>
+        {!isMobile && (
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="text-xl hover:text-primary transition"
+          >
+            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          </button>
+        )}
       </div>
+
       <Menu
         mode="inline"
         selectedKeys={[location.pathname]}
