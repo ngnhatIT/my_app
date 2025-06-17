@@ -1,10 +1,16 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { UserDTO } from "./dto/LoginResponseDTO";
+import type { LoginRequestDTO } from "./dto/LoginRequestDTO";
+import type { AppThunk } from "../../app/store";
+import i18n from "../../i18n/i18n";
+import { notification } from "antd";
+import { getErrorMessage } from "../../utils/errorUtil";
+import { useAuthService } from "./AuthService";
 
 interface AuthState {
   user: UserDTO | null;
   token: string | null;
-  status: "idle" | "loading" | "succeeded" | "failed" | "verifying-otp" | "resetting-password";
+  status: "idle" | "loading" | "succeeded" | "failed";
   isAuthenticated: boolean;
   error: string | null;
 }
@@ -56,14 +62,6 @@ const authSlice = createSlice({
     clearError(state) {
       state.error = null;
     },
-    startOtpVerification(state) {
-      state.status = "verifying-otp";
-      state.error = null;
-    },
-    startPasswordReset(state) {
-      state.status = "resetting-password";
-      state.error = null;
-    },
   },
 });
 
@@ -74,7 +72,22 @@ export const {
   setAuthStatus,
   setAuthError,
   clearError,
-  startOtpVerification,
-  startPasswordReset,
 } = authSlice.actions;
 export default authSlice.reducer;
+
+export const loginThunk = (payload: LoginRequestDTO): AppThunk => async (dispatch) => {
+  const { t } = i18n;
+  dispatch(setAuthStatus("loading"));
+  try {
+    const { loginUser } = useAuthService(t);
+    const { access_token, user } = await loginUser(payload);
+    dispatch(loginSuccess({ user, token: access_token }));
+  } catch (err: any) {
+    dispatch(setAuthStatus("failed"));
+    notification.error({
+      message: t("login.failedTitle"),
+      description: getErrorMessage(err, t),
+      placement: "topLeft",
+    });
+  }
+};

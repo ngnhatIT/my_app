@@ -11,7 +11,7 @@ import { MailOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useAuthService } from "../services/AuthService";
+import { useAuthService } from "../AuthService";
 import { setAuthStatus } from "../AuthSlice";
 import type { RootState, AppDispatch } from "../../../app/store";
 

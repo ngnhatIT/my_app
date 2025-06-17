@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { setAuthStatus } from "../AuthSlice";
-import { useAuthService } from "../services/AuthService";
+import { useAuthService } from "../AuthService";
 import type { RootState } from "../../../app/store";
 
 const { Title, Text } = Typography;

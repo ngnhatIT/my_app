@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   Button,
@@ -18,7 +18,10 @@ import {
   HomeOutlined,
 } from "@ant-design/icons";
 import { useNavigate, Link } from "react-router-dom";
-import { useFakeApi } from "../../hooks/useFakeApi";
+import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import type { RootState } from "../../../app/store";
+import { fetchUsers } from "../userSlice";
 
 interface User {
   id: number;
@@ -31,27 +34,32 @@ interface User {
 const { Search } = Input;
 
 const UserList = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [searchText, setSearchText] = useState("");
 
   const {
     token: { colorBgContainer, colorTextBase },
   } = antdTheme.useToken();
 
-  const { data: users, loading } = useFakeApi<User>("users");
+  const { users, loading } = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   const filteredUsers = users.filter((user) =>
     user.username?.toLowerCase().includes(searchText?.toLowerCase() || "")
   );
 
   const handleDelete = (id: number) => {
-    // Nếu kết nối backend thật, gọi DELETE tại đây
-    console.log("Xoá user id:", id);
+    dispatch(deleteUser(id));
   };
 
   const columns = [
     {
-      title: "Người dùng",
+      title: t("userList.columns.username"),
       dataIndex: "name",
       key: "name",
       render: (_: any, record: User) => (
@@ -67,7 +75,7 @@ const UserList = () => {
       ),
     },
     {
-      title: "Vai trò",
+      title: t("userList.columns.role"),
       dataIndex: "role",
       key: "role",
       render: (role: string) => {
@@ -77,7 +85,7 @@ const UserList = () => {
       },
     },
     {
-      title: "Trạng thái",
+      title: t("userList.columns.status"),
       dataIndex: "status",
       key: "status",
       render: (status: string) => (
@@ -85,18 +93,18 @@ const UserList = () => {
       ),
     },
     {
-      title: "Hành động",
+      title: t("userList.columns.actions"),
       key: "actions",
       render: (_: any, record: User) => (
         <Space>
-          <Tooltip title="Chỉnh sửa">
+          <Tooltip title={t("common.edit")}>
             <Button
               icon={<EditOutlined />}
               shape="circle"
               onClick={() => navigate(`/users/${record.id}/edit`)}
             />
           </Tooltip>
-          <Tooltip title="Xoá">
+          <Tooltip title={t("common.delete")}>
             <Button
               icon={<DeleteOutlined />}
               shape="circle"
@@ -118,13 +126,13 @@ const UserList = () => {
         className="mb-4"
         items={[
           { title: <HomeOutlined />, href: "/" },
-          { title: <Link to="/users">Người dùng</Link> },
+          { title: <Link to="/users">{t("userList.breadcrumb")}</Link> },
         ]}
       />
 
       <div className="mb-6 mt-3 flex flex-col sm:flex-row justify-between items-center gap-4">
         <Search
-          placeholder="Tìm kiếm người dùng"
+          placeholder={t("userList.search.placeholder")}
           allowClear
           enterButton={<SearchOutlined />}
           onSearch={(value) => setSearchText(value)}
@@ -137,7 +145,7 @@ const UserList = () => {
           onClick={() => navigate("/users/new")}
           className="w-full sm:w-auto"
         >
-          Thêm người dùng
+          {t("userList.addButton")}
         </Button>
       </div>
 

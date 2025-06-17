@@ -1,11 +1,12 @@
-import axiosInstance from "../../../api/AxiosIntance";
-import { handleAxiosError } from "../../../api/HandleAxiosError";
-import type { ChangePasswordDTO } from "../dto/ChangePasswordDto";
-import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
-import type { LoginResponseDTO } from "../dto/LoginResponseDTO";
-import type { RegisterRequestDTO } from "../dto/RegisterRequestDTO";
-import type { RegisterResponseDTO } from "../dto/RegisterResponseDTO";
-import type { VerifyOtpRequestDTO } from "../dto/VerifyRequestDTO";
+
+import { handleAxiosError } from "../../api/AandleAxiosError";
+import axiosInstance from "../../api/AxiosIntance";
+import type { ChangePasswordDTO } from "./dto/ChangePasswordDTO";
+import type { LoginRequestDTO } from "./dto/LoginRequestDTO";
+import type { LoginResponseDTO } from "./dto/LoginResponseDTO";
+import type { RegisterRequestDTO } from "./dto/RegisterRequestDTO";
+import type { RegisterResponseDTO } from "./dto/RegisterResponseDTO";
+import type { VerifyOtpRequestDTO } from "./dto/VerifyRequestDTO";
 
 export const useAuthService = (translate: (key: string) => string) => {
   const loginUser = async (payload: LoginRequestDTO): Promise<LoginResponseDTO> => {

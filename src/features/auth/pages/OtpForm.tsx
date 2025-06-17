@@ -12,7 +12,7 @@ import Otp, { type OTPProps } from "antd/es/input/OTP";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuthService } from "../services/AuthService";
+import { useAuthService } from "../AuthService";
 import { registerSuccess, setAuthStatus } from "../AuthSlice";
 import type { RootState, AppDispatch } from "../../../app/store";
 import { getErrorMessage } from "../../../utils/errorUtil";

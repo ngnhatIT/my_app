@@ -1,29 +1,18 @@
 import { useEffect } from "react";
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  Typography,
-  theme,
-  notification,
-} from "antd";
+import { Button, Card, Form, Input, Typography, theme } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useAuthService } from "../services/AuthService";
 import type { AppDispatch, RootState } from "../../../app/store";
 import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
-import { loginSuccess, setAuthStatus } from "../AuthSlice";
+import { loginThunk } from "../AuthSlice";
 import { setNavigate } from "../../../api/AxiosIntance";
-import { getErrorMessage } from "../../../utils/errorUtil";
 
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const { loginUser } = useAuthService(t);
   const status = useSelector((state: RootState) => state.auth.status);
   const [form] = Form.useForm();
 
@@ -40,19 +29,7 @@ const Login = () => {
 
   const onFinish = async (values: LoginRequestDTO) => {
     if (status === "loading") return;
-    dispatch(setAuthStatus("loading"));
-
-    try {
-      const { access_token, user } = await loginUser(values);
-      dispatch(loginSuccess({ user, token: access_token }));
-    } catch (err: any) {
-      dispatch(setAuthStatus("failed"));
-      notification.error({
-        message: t("login.failedTitle"),
-        description: getErrorMessage(err, t),
-        placement: "topLeft",
-      });
-    }
+    dispatch(loginThunk(values));
   };
 
   return (
