@@ -13,6 +13,6 @@ export const authRoutes = {
     { path: "register", element: <Register /> },
     { path: "forgot-password", element: <ForgotPassword /> },
     { path: "reset-password", element: <ResetPassword /> },
-    { path: "otp", element: <OtpForm /> },
+    { path: "verify-otp", element: <OtpForm /> },
   ],
 };

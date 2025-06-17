@@ -1,11 +1,18 @@
-
 // WorkspaceChangePassword.tsx (updated with current + confirm password)
 import { Form, Input, Button, message } from "antd";
 
-const WorkspaceChangePassword = ({ workspace, onClose }) => {
+interface WorkspaceChangePasswordProps {
+  workspace: { id: string }; // Adjust the type as needed
+  onClose: () => void;
+}
+
+const WorkspaceChangePassword: React.FC<WorkspaceChangePasswordProps> = ({
+  workspace,
+  onClose,
+}) => {
   const [form] = Form.useForm();
 
-  const onFinish = (values) => {
+  const onFinish = (values: any) => {
     if (values.newPassword !== values.confirmPassword) {
       message.error("Mật khẩu xác nhận không khớp!");
       return;
@@ -20,7 +27,9 @@ const WorkspaceChangePassword = ({ workspace, onClose }) => {
       <Form.Item
         label="Mật khẩu hiện tại"
         name="currentPassword"
-        rules={[{ required: true, message: "Vui lòng nhập mật khẩu hiện tại!" }]}
+        rules={[
+          { required: true, message: "Vui lòng nhập mật khẩu hiện tại!" },
+        ]}
       >
         <Input.Password />
       </Form.Item>
@@ -43,14 +52,16 @@ const WorkspaceChangePassword = ({ workspace, onClose }) => {
                 return Promise.resolve();
               }
               return Promise.reject(new Error("Mật khẩu xác nhận không khớp!"));
-            }
-          })
+            },
+          }),
         ]}
       >
         <Input.Password />
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit">Lưu</Button>
+        <Button type="primary" htmlType="submit">
+          Lưu
+        </Button>
       </Form.Item>
     </Form>
   );

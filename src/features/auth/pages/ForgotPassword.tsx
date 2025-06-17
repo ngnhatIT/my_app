@@ -1,47 +1,128 @@
-import { Form, Input, Button, Typography, message, theme, Card } from "antd";
+import {
+  Form,
+  Input,
+  Button,
+  Typography,
+  notification,
+  theme,
+  Card,
+} from "antd";
 import { MailOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useAuthService } from "../services/AuthService";
+import { setAuthStatus } from "../AuthSlice";
+import type { RootState, AppDispatch } from "../../../app/store";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const ForgotPassword = () => {
+  const { t } = useTranslation();
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const { sendOtp } = useAuthService(t);
   const [form] = Form.useForm();
+  const status = useSelector((state: RootState) => state.auth.status);
+
   const {
-    token: { colorBgContainer, colorTextBase },
+    token: { colorBgContainer, colorTextBase, colorPrimary },
   } = theme.useToken();
 
-  const handleSubmit = (values: { email: string }) => {
-    console.log("Reset email sent to:", values.email);
-    message.success("Link đặt lại mật khẩu đã được gửi!");
+  const handleSubmit = async (values: { email: string }) => {
+    try {
+      dispatch(setAuthStatus("loading"));
+      await sendOtp(values.email);
+      notification.success({
+        message: t("forgotPassword.otpSentTitle"),
+        description: t("forgotPassword.otpSent"),
+        placement: "topRight",
+      });
+      navigate("/auth/verify-otp", {
+        state: {
+          user: { email: values.email },
+          otpCountdownStart: Date.now(),
+          flowType: "forgot-password",
+        },
+      });
+    } catch (err: any) {
+      dispatch(setAuthStatus("failed"));
+      notification.error({
+        message: t("forgotPassword.failedTitle"),
+        description: err?.response?.data?.message ?? t("forgotPassword.failed"),
+        placement: "topRight",
+      });
+    }
   };
 
   return (
-    <Card
-      className="p-6 rounded-md shadow-md max-w-md w-full mx-auto mt-10"
-      style={{ background: colorBgContainer, color: colorTextBase }}
-    >
-      <Title level={3} className="text-center">
-        Quên mật khẩu
-      </Title>
-      <p className="text-center mb-4">
-        Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.
-      </p>
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            { required: true, type: "email", message: "Vui lòng nhập email!" },
-          ]}
+    <div className="min-h-screen flex items-center justify-center">
+      <Card
+        className="p-8 rounded-xl shadow-lg w-full max-w-md"
+        style={{
+          background: colorBgContainer,
+          color: colorTextBase,
+          border: `1px solid ${colorPrimary}20`,
+        }}
+      >
+        <Title
+          level={3}
+          className="text-center"
+          style={{ color: colorPrimary }}
         >
-          <Input prefix={<MailOutlined />} placeholder="you@example.com" />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" block>
-            Gửi liên kết đặt lại mật khẩu
-          </Button>
-        </Form.Item>
-      </Form>
-    </Card>
+          {t("forgotPassword.title")}
+        </Title>
+        <Text
+          className="text-center block mb-6"
+          style={{ color: colorTextBase }}
+        >
+          {t("forgotPassword.description")}
+        </Text>
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Form.Item
+            label={t("forgotPassword.email")}
+            name="email"
+            rules={[
+              {
+                required: true,
+                type: "email",
+                message: t("forgotPassword.emailRequired"),
+              },
+            ]}
+          >
+            <Input
+              prefix={<MailOutlined />}
+              placeholder="you@example.com"
+              size="large"
+              className="rounded-md"
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              size="large"
+              loading={status === "loading"}
+              disabled={status === "loading"}
+              className="rounded-md"
+            >
+              {t("forgotPassword.submit")}
+            </Button>
+          </Form.Item>
+          <div className="flex justify-center mt-4">
+            <Button
+              type="link"
+              onClick={() => navigate("/auth/login")}
+              style={{ color: colorPrimary }}
+            >
+              {t("forgotPassword.toLogin")}
+            </Button>
+          </div>
+        </Form>
+      </Card>
+    </div>
   );
 };
+
 export default ForgotPassword;

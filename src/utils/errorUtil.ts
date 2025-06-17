@@ -17,7 +17,7 @@ export const getErrorMessage = (
     case "NETWORK":
       return translate("error.network");
     case "VALIDATION_FAILED":
-      return error.message; // Chi tiết lỗi validation từ server
+      return error.message;
     case "SERVER_ERROR":
       return translate("error.tryAgainLater");
     case "FORBIDDEN":

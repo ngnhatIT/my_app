@@ -31,7 +31,6 @@ const Login = () => {
     token: { colorBgContainer, colorTextBase },
   } = theme.useToken();
 
-  // Thiết lập navigate cho axiosInstance
   useEffect(() => {
     setNavigate(navigate);
     return () => {
@@ -39,18 +38,13 @@ const Login = () => {
     };
   }, [navigate]);
 
-  const onFinish = async (values: Omit<LoginRequestDTO, "captchaToken">) => {
+  const onFinish = async (values: LoginRequestDTO) => {
     if (status === "loading") return;
     dispatch(setAuthStatus("loading"));
 
     try {
       const { access_token, user } = await loginUser(values);
       dispatch(loginSuccess({ user, token: access_token }));
-      notification.success({
-        message: t("login.successTitle"),
-        description: t("login.success"),
-        placement: "topLeft",
-      });
     } catch (err: any) {
       dispatch(setAuthStatus("failed"));
       notification.error({

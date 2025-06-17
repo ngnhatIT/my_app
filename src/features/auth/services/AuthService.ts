@@ -1,15 +1,11 @@
-
 import axiosInstance from "../../../api/AxiosIntance";
-import { handleAxiosError } from "../../../api/handleAxiosError";
+import { handleAxiosError } from "../../../api/HandleAxiosError";
+import type { ChangePasswordDTO } from "../dto/ChangePasswordDto";
 import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
 import type { LoginResponseDTO } from "../dto/LoginResponseDTO";
 import type { RegisterRequestDTO } from "../dto/RegisterRequestDTO";
 import type { RegisterResponseDTO } from "../dto/RegisterResponseDTO";
-
-interface VerifyOtpRequestDTO {
-  email: string;
-  otp: string;
-}
+import type { VerifyOtpRequestDTO } from "../dto/VerifyRequestDTO";
 
 export const useAuthService = (translate: (key: string) => string) => {
   const loginUser = async (payload: LoginRequestDTO): Promise<LoginResponseDTO> => {
@@ -32,6 +28,14 @@ export const useAuthService = (translate: (key: string) => string) => {
     }
   };
 
+  const sendOtp = async (email: string) => {
+    try {
+      await axiosInstance.post("/api/send-otp", { email });
+    } catch (err) {
+      throw handleAxiosError(err, translate, translate("otp.failed"));
+    }
+  };
+
   const verifyOtp = async (data: VerifyOtpRequestDTO): Promise<{ success: boolean }> => {
     try {
       const res = await axiosInstance.post<{ success: boolean }>("/api/verify-otp", data);
@@ -41,5 +45,14 @@ export const useAuthService = (translate: (key: string) => string) => {
     }
   };
 
-  return { loginUser, registerUser, verifyOtp };
+  const changePassword = async (data: ChangePasswordDTO): Promise<{ success: boolean }> => {
+    try {
+      const res = await axiosInstance.post<{ success: boolean }>("/api/change-password", data);
+      return res.data;
+    } catch (err) {
+      throw handleAxiosError(err, translate, translate("resetPassword.failed"));
+    }
+  };
+
+  return { loginUser, registerUser, verifyOtp, sendOtp, changePassword };
 };

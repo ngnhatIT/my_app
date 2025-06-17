@@ -21,7 +21,8 @@
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm Password",
-    "submit": "Register",
+    "description": "Create a new account to get started.",
+    "submit": "Sign Up",
     "toLogin": "Already have an account? Login",
     "usernameRequired": "Please enter your username!",
     "emailRequired": "Please enter a valid email!",
@@ -29,10 +30,62 @@
     "confirmPasswordRequired": "Please confirm your password!",
     "passwordsMismatch": "Passwords do not match!",
     "successTitle": "Registration Successful",
-    "success": "Please verify your email via OTP.",
+    "success": "Registration completed successfully!",
+    "otpSentTitle": "OTP Sent",
+    "otpSent": "A verification code has been sent to your email.",
     "failedTitle": "Registration Failed",
-    "failed": "Registration failed.",
+    "failed": "An error occurred during registration. Please try again.",
     "emailInUse": "This email is already registered."
+  },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "description": "Enter your registered email to receive a password reset OTP.",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "emailRequired": "Please enter a valid email!",
+    "submit": "Send OTP",
+    "toLogin": "Back to Login",
+    "otpSentTitle": "OTP Sent",
+    "otpSent": "A verification code has been sent to your email.",
+    "failedTitle": "Error",
+    "failed": "Failed to send OTP. Please try again."
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "description": "Enter your new password below.",
+    "password": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "passwordRequired": "Please enter your new password!",
+    "confirmRequired": "Please confirm your new password!",
+    "passwordsMismatch": "Passwords do not match!",
+    "submit": "Reset Password",
+    "toLogin": "Back to Login",
+    "successTitle": "Password Reset Successful",
+    "success": "Your password has been successfully reset!",
+    "failedTitle": "Password Reset Failed",
+    "failed": "Failed to reset password. Please try again.",
+    "noDataTitle": "Invalid Request",
+    "noData": "Please start the password reset process again."
+  },
+  "otp": {
+    "titleRegister": "Verify Your Email",
+    "titleForgotPassword": "Verify OTP for Password Reset",
+    "description": "Enter the 6-digit code sent to {{email}}.",
+    "required": "Please enter the OTP!",
+    "submit": "Verify OTP",
+    "resend": "Resend OTP",
+    "resendCountdown": "Resend in {{seconds}}s",
+    "resendSuccessTitle": "OTP Resent",
+    "resendSuccess": "A new OTP has been sent to your email.",
+    "resendFailedTitle": "Resend Failed",
+    "resendFailed": "Failed to resend OTP. Please try again.",
+    "successTitle": "Verification Successful",
+    "successRegister": "Your account has been registered successfully!",
+    "successForgotPassword": "OTP verified! You can now reset your password.",
+    "failedTitle": "Invalid OTP",
+    "failed": "The OTP is invalid or expired. Please try again.",
+    "noEmailTitle": "Invalid Request",
+    "noEmail": "No email provided. Please start over."
   },
   "error": {
     "forbidden": "Access Denied",
@@ -40,11 +93,13 @@
     "notFound": "Not Found",
     "resourceMissing": "The requested resource was not found.",
     "serverError": "Server Error",
-    "tryAgainLater": "Something went wrong. Please try again later.",
-    "network": "Network Error"
+    "tryAgain": "Something went wrong. Please try again later.",
+    "network": "Network Error",
+    "general": "An error occurred. Please try again."
   },
   "auth": {
     "sessionExpired": "Session Expired",
-    "pleaseLoginAgain": "Please log in again to continue."
+    "pleaseLoginAgain": "Please log in again to continue.",
+    "authError": "Authentication error. Please try again."
   }
 }
