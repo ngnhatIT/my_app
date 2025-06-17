@@ -8,18 +8,16 @@ import {
   notification,
   theme,
 } from "antd";
-import Otp, { type OTPProps } from "antd/es/input/OTP";
+import Otp from "antd/es/input/OTP";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuthService } from "../AuthService";
-import { registerSuccess, setAuthStatus } from "../AuthSlice";
 import type { RootState, AppDispatch } from "../../../app/store";
-import { getErrorMessage } from "../../../utils/errorUtil";
-import type { UserRegisterDTO } from "../dto/VerifyRequestDTO";
+
+import { sendOtp, setAuthStatus, verifyOtpThunk } from "../AuthSlice";
+import type { UserRegisterDTO } from "../dto/VerifyOtpRequestDTO";
 
 const { Title, Text } = Typography;
-
 const OTP_COUNTDOWN_SECONDS = 60;
 
 const OtpForm = () => {
@@ -27,15 +25,14 @@ const OtpForm = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { verifyOtp, sendOtp, registerUser } = useAuthService(t);
-  const status = useSelector((state: RootState) => state.auth.status);
+  const status = useSelector((s: RootState) => s.auth.status);
   const [form] = Form.useForm();
   const [countdown, setCountdown] = useState(OTP_COUNTDOWN_SECONDS);
   const [otp, setOtp] = useState("");
 
   const user: UserRegisterDTO | undefined = state?.user;
   const email: string = user?.email ?? "";
-  const flowType: string = state?.flowType ?? "register";
+  const flowType = state?.flowType ?? "register";
   const otpCountdownStart = state?.otpCountdownStart ?? Date.now();
 
   const {
@@ -47,7 +44,6 @@ const OtpForm = () => {
       notification.error({
         message: t("otp.noEmailTitle"),
         description: t("otp.noEmail"),
-        placement: "topLeft",
       });
       navigate("/auth/register", { replace: true });
     }
@@ -61,96 +57,46 @@ const OtpForm = () => {
     return () => clearInterval(interval);
   }, [user, email, otpCountdownStart, navigate, t]);
 
-  const onChange: OTPProps["onChange"] = (text) => {
-    setOtp(text.toUpperCase());
-  };
+  const handleSubmit = () => {
+    if (status === "loading" || otp.length !== 6 || !user) return;
 
-  const handleSubmit = async () => {
-    if (status === "loading" || !user || !otp || otp.length !== 6) return;
-
-    try {
-      dispatch(setAuthStatus("loading"));
-      const payload = { user, otp };
-      const { success } = await verifyOtp(payload);
-
-      if (success) {
-        if (flowType === "register") {
-          const registerPayload = {
-            email: user.email,
-            username: user.username,
-            password: user.password,
-          };
-          const { access_token, user: registeredUser } = await registerUser(
-            registerPayload
-          );
-          dispatch(
-            registerSuccess({ user: registeredUser, token: access_token })
-          );
-          notification.success({
-            message: t("otp.successTitle"),
-            description: t("otp.successRegister"),
-            placement: "topRight",
-          });
-          navigate("/", { replace: true });
-        } else if (flowType === "forgot-password") {
-          notification.success({
-            message: t("otp.successTitle"),
-            description: t("otp.successForgotPassword"),
-            placement: "topRight",
-          });
-          navigate("/auth/reset-password", {
-            state: { email, otp },
-            replace: true,
-          });
+    dispatch(
+      verifyOtpThunk(
+        { user, otp },
+        t,
+        flowType,
+        (access_token, verifiedUser) => {
+          if (flowType === "register") {
+            navigate("/", { replace: true });
+          } else {
+            navigate("/auth/reset-password", {
+              replace: true,
+              state: { email, otp },
+            });
+          }
         }
-      }
-    } catch (err: any) {
-      dispatch(setAuthStatus("failed"));
-      notification.error({
-        message: t("otp.failedTitle"),
-        description: getErrorMessage(err, t),
-        placement: "topRight",
-      });
-    }
+      )
+    );
   };
 
   const handleResendOtp = async () => {
-    if (status === "loading" || countdown > 0) return;
+    if (status === "loading" || countdown > 0 || !email) return;
 
     try {
       dispatch(setAuthStatus("loading"));
-      if (!email) {
-        throw new Error(t("otp.noEmail"));
-      }
-      await sendOtp(email);
+      dispatch(sendOtp(t,email));
       notification.success({
         message: t("otp.resendSuccessTitle"),
         description: t("otp.resendSuccess"),
-        placement: "topRight",
       });
       setCountdown(OTP_COUNTDOWN_SECONDS);
-      navigate("/auth/verify-otp", {
-        state: {
-          user,
-          otpCountdownStart: Date.now(),
-          flowType,
-        },
-        replace: true,
-      });
     } catch (err: any) {
       dispatch(setAuthStatus("failed"));
       notification.error({
         message: t("otp.resendFailedTitle"),
-        description: getErrorMessage(err, t),
-        placement: "topLeft",
+        description: t("otp.resendFailed"),
       });
     }
-  };
-
-  const sharedProps: OTPProps = {
-    onChange,
-    length: 6,
-    value: otp,
   };
 
   return (
@@ -174,28 +120,24 @@ const OtpForm = () => {
               : "otp.titleForgotPassword"
           )}
         </Title>
-        <Text
-          className="text-center block mb-6"
-          style={{ color: colorTextBase }}
-        >
+        <Text className="text-center block mb-6">
           {t("otp.description", { email })}
         </Text>
+
         <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
             name="otp"
             rules={[{ required: true, message: t("otp.required") }]}
             style={{ marginBottom: 24 }}
           >
-            <Flex justify="center" align="center">
+            <Flex justify="center">
               <Otp
-                {...sharedProps}
-                formatter={(str) => str.toUpperCase()}
+                onChange={(val) => setOtp(val.toUpperCase())}
+                value={otp}
+                length={6}
                 disabled={status === "loading"}
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: 8,
-                }}
+                formatter={(str) => str.toUpperCase()}
+                style={{ display: "flex", gap: 8 }}
               />
             </Flex>
           </Form.Item>
@@ -212,7 +154,7 @@ const OtpForm = () => {
               {t("otp.submit")}
             </Button>
           </Form.Item>
-          <Flex justify="center" align="center" style={{ marginTop: 16 }}>
+          <Flex justify="center" style={{ marginTop: 16 }}>
             <Button
               type="link"
               onClick={handleResendOtp}
@@ -220,7 +162,6 @@ const OtpForm = () => {
               style={{
                 color: countdown > 0 ? colorTextBase : colorPrimary,
                 fontWeight: countdown > 0 ? 400 : 500,
-                transition: "all 0.3s",
               }}
             >
               {countdown > 0

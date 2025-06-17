@@ -1,4 +1,5 @@
 export interface ResetPasswordRequestDTO {
-  token: string;
-  password: string;
+  otp: string;
+  newPassword: string;
+  email:string;
 }

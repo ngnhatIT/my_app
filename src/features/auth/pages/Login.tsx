@@ -29,7 +29,7 @@ const Login = () => {
 
   const onFinish = async (values: LoginRequestDTO) => {
     if (status === "loading") return;
-    dispatch(loginThunk(values));
+    dispatch(loginThunk(t,values));
   };
 
   return (

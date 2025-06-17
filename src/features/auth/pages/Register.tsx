@@ -1,28 +1,22 @@
+// Register.tsx
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  Typography,
-  notification,
-  theme,
-} from "antd";
+import { Button, Card, Form, Input, Typography, theme } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { setAuthStatus } from "../AuthSlice";
-import { useAuthService } from "../AuthService";
-import type { RootState } from "../../../app/store";
+import { type RootState } from "../../../app/store";
+import { registerOtpThunk } from "../AuthSlice";
+import type { AppDispatch } from "../../../app/store";
 
 const { Title, Text } = Typography;
 
 const Register = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { sendOtp } = useAuthService(t);
   const [form] = Form.useForm();
+
+  const status = useSelector((state: RootState) => state.auth.status);
 
   const {
     token: { colorBgContainer, colorTextBase, colorPrimary },
@@ -35,41 +29,29 @@ const Register = () => {
     confirmPassword: string;
   }) => {
     if (values.password !== values.confirmPassword) {
-      notification.error({
-        message: t("register.failedTitle"),
-        description: t("register.passwordsMismatch"),
-        placement: "topRight",
-      });
-      return;
+      return form.setFields([
+        {
+          name: "confirmPassword",
+          errors: [t("register.passwordsMismatch")],
+        },
+      ]);
     }
 
-    try {
-      dispatch(setAuthStatus("loading"));
-      await sendOtp(values.email);
-      notification.success({
-        message: t("register.otpSentTitle"),
-        description: t("register.otpSent"),
-        placement: "topRight",
-      });
-      navigate("/auth/verify-otp", {
-        state: {
-          user: {
-            email: values.email,
-            username: values.username,
-            password: values.password,
+    dispatch(
+      registerOtpThunk(t, values.email, () => {
+        navigate("/auth/verify-otp", {
+          state: {
+            user: {
+              email: values.email,
+              username: values.username,
+              password: values.password,
+            },
+            otpCountdownStart: Date.now(),
+            flowType: "register",
           },
-          otpCountdownStart: Date.now(),
-          flowType: "register",
-        },
-      });
-    } catch (err: any) {
-      notification.error({
-        message: t("register.failedTitle"),
-        description: err?.response?.data?.message ?? t("register.failed"),
-        placement: "topRight",
-      });
-      dispatch(setAuthStatus("failed"));
-    }
+        });
+      })
+    );
   };
 
   return (
@@ -181,10 +163,7 @@ const Register = () => {
               htmlType="submit"
               block
               size="large"
-              loading={
-                useSelector((state: RootState) => state.auth.status) ===
-                "loading"
-              }
+              loading={status === "loading"}
               className="mt-4 rounded-md"
             >
               {t("register.submit")}
