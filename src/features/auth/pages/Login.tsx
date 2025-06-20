@@ -1,97 +1,83 @@
-import { useEffect } from "react";
-import { Button, Card, Form, Input, Typography, theme } from "antd";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../../app/store";
-import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
-import { loginThunk } from "../AuthSlice";
-import { setNavigate } from "../../../api/AxiosIntance";
+import React from "react";
+import { Form, Input, Button } from "antd";
+import {
+  UserOutlined,
+  LockOutlined,
+  EyeTwoTone,
+  EyeInvisibleOutlined,
+} from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../app/store";
+import "../../../css/button.css"; // Bạn đã có class "button-primary"
 
-const Login = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
-  const status = useSelector((state: RootState) => state.auth.status);
-  const [form] = Form.useForm();
-
-  const {
-    token: { colorBgContainer, colorTextBase },
-  } = theme.useToken();
-
-  useEffect(() => {
-    setNavigate(navigate);
-    return () => {
-      setNavigate(() => {});
-    };
-  }, [navigate]);
-
-  const onFinish = async (values: LoginRequestDTO) => {
-    if (status === "loading") return;
-    dispatch(loginThunk(t,values));
-  };
+export const Login = () => {
+  const isDark = useSelector((state: RootState) => state.theme.darkMode);
 
   return (
-    <div className="px-4 sm:px-0">
-      <Card
-        className="p-6 rounded-md shadow-md max-w-md w-full mx-auto mt-10"
-        style={{ background: colorBgContainer, color: colorTextBase }}
-      >
-        <Typography.Title level={3} className="text-center">
-          {t("login.title")}
-        </Typography.Title>
+    <div className="w-full">
+      <h2 className="text-4xl font-bold mb-2 text-white">Login</h2>
+      <p className="text-sm mb-8 text-pink-300">
+        Don’t have an account?{" "}
+        <a href="#" className="text-pink-400 font-medium">
+          Register
+        </a>
+      </p>
 
-        <Form
-          onFinish={onFinish}
-          form={form}
-          layout="vertical"
-          autoComplete="off"
+      <Form layout="vertical" onFinish={(v) => console.log(v)}>
+        <Form.Item
+          label={<span className="text-white">Username *</span>}
+          name="username"
+          rules={[{ required: true, message: "Please enter your username" }]}
         >
-          <Form.Item
-            name="username"
-            rules={[{ required: true, message: t("login.usernameRequired") }]}
-          >
-            <Input
-              prefix={<UserOutlined />}
-              placeholder={t("login.username")}
-              disabled={status === "loading"}
-            />
-          </Form.Item>
+          <Input
+            size="large"
+            placeholder="Enter your username"
+            prefix={<UserOutlined />}
+            className="rounded-xl text-white placeholder:text-white/40"
+            style={{
+              background: "rgba(26,0,48,0.7)",
+              border: "1px solid #a855f7",
+            }}
+          />
+        </Form.Item>
 
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: t("login.passwordRequired") }]}
-          >
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder={t("login.password")}
-              disabled={status === "loading"}
-            />
-          </Form.Item>
+        <Form.Item
+          label={<span className="text-white">Password *</span>}
+          name="password"
+          rules={[{ required: true, message: "Please enter your password" }]}
+        >
+          <Input.Password
+            size="large"
+            placeholder="Enter your password"
+            prefix={<LockOutlined />}
+            iconRender={(visible) =>
+              visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+            }
+            className="rounded-xl text-white placeholder:text-white/40"
+            style={{
+              background: "rgba(26,0,48,0.7)",
+              border: "1px solid #a855f7",
+            }}
+          />
+        </Form.Item>
 
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              block
-              loading={status === "loading"}
-              disabled={status === "loading"}
-            >
-              {t("login.submit")}
-            </Button>
-          </Form.Item>
-        </Form>
-
-        <div className="flex justify-between mt-2">
-          <Button type="link" onClick={() => navigate("/auth/register")}>
-            {t("login.register")}
-          </Button>
-          <Button type="link" onClick={() => navigate("/auth/forgot-password")}>
-            {t("login.forgotPassword")}
-          </Button>
+        <div className="text-sm mb-5 text-right">
+          <a href="#" className="text-blue-400 hover:text-blue-500">
+            Forgot password?
+          </a>
         </div>
-      </Card>
+
+        <Form.Item className="mb-0">
+          <Button
+            htmlType="submit"
+            size="large"
+            type="primary"
+            className="w-full h-12 text-base font-semibold rounded-xl text-white bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg border-none hover:opacity-90"
+          >
+            Login
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };

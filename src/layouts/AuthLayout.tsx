@@ -1,53 +1,55 @@
-// src/layouts/AuthLayout.tsx
-import { Outlet, useNavigate } from "react-router-dom";
-import { Select, theme as antdTheme } from "antd";
-import { useTranslation } from "react-i18next";
+import React from "react";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
+import { Outlet } from "react-router-dom";
 import type { RootState } from "../app/store";
 
-const languageOptions = [
-  { value: "en", label: "English" },
-  { value: "ja", label: "日本語" },
-];
+import "../css/layout.css";
+import { AuthLeftPanel } from "./AuthLeftPanel";
 
-export default function AuthLayout() {
-  const { i18n } = useTranslation();
-  const navigate = useNavigate();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
+import bgLight from "../assets/bg-light.png"; // ảnh nền sáng
 
-  const {
-    token: { colorBgContainer, colorTextBase },
-  } = antdTheme.useToken();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/", { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
+export const AuthLayout = () => {
+  const isDark = useSelector((state: RootState) => state.theme.darkMode);
+  const layoutClass = isDark ? "login-dark-mode-EN" : "login-light-mode-EN";
 
   return (
     <div
-      className="min-h-screen flex flex-col justify-center items-center px-4"
-      style={{ background: colorBgContainer, color: colorTextBase }}
+      className={layoutClass}
+      style={
+        !isDark
+          ? {
+              backgroundImage: `url(${bgLight})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }
+          : undefined
+      }
     >
-      {/* Language Switcher */}
-      <div className="fixed top-4 right-4 z-10">
-        <Select
-          value={i18n.language}
-          onChange={(val) => i18n.changeLanguage(val)}
-          options={languageOptions}
-          size="small"
-          style={{ width: 120 }}
-        />
-      </div>
+      {/* Ellipse chỉ dùng ở dark mode */}
+      {isDark && (
+        <>
+          <div className="ellipse" />
+          <div className="ellipse-2" />
+        </>
+      )}
 
-      {/* Auth Content */}
-      <div className="w-full max-w-md p-6">
-        <Outlet />
+      {/* Flex wrapper */}
+      <div className="auth-container">
+        {/* Left Panel */}
+        <div className="flex-[2]">
+          <div className="card">
+            <AuthLeftPanel />
+          </div>
+        </div>
+
+        {/* Right Panel */}
+        <div className="flex-[3]">
+          <div className="card-2">
+            <Outlet />
+          </div>
+        </div>
       </div>
     </div>
   );
-}
+};

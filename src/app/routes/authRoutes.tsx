@@ -3,7 +3,7 @@ import Login from "../../features/auth/pages/Login";
 import OtpForm from "../../features/auth/pages/OtpForm";
 import Register from "../../features/auth/pages/Register";
 import ResetPassword from "../../features/auth/pages/ResetPassword";
-import AuthLayout from "../../layouts/AuthLayout";
+import { AuthLayout } from "../../layouts/AuthLayout";
 
 export const authRoutes = {
   path: "/auth",

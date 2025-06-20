@@ -9,7 +9,6 @@ const themeSlice = createSlice({
     toggleTheme: (state) => {
       state.darkMode = !state.darkMode;
 
-      // ❗ Xử lý dứt điểm: xóa cả hai class trước
       document.documentElement.classList.remove("dark", "light");
 
       if (state.darkMode) {
