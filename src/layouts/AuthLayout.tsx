@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 import type { RootState } from "../app/store";
 
 import "../css/layout.css";
-import { AuthLeftPanel } from "./AuthLeftPanel";
+import  AuthLeftPanel  from "./AuthLeftPanel";
 
 import bgLight from "../assets/bg-light.png"; // ảnh nền sáng
 
@@ -38,16 +38,12 @@ export const AuthLayout = () => {
       <div className="auth-container">
         {/* Left Panel */}
         <div className="flex-[2]">
-          <div className="card">
             <AuthLeftPanel />
-          </div>
         </div>
 
         {/* Right Panel */}
         <div className="flex-[3]">
-          <div className="card-2">
             <Outlet />
-          </div>
         </div>
       </div>
     </div>

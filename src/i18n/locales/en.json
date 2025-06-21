@@ -67,26 +67,19 @@
     "noDataTitle": "Invalid Request",
     "noData": "Please start the password reset process again."
   },
+  
   "otp": {
-    "titleRegister": "Verify Your Email",
-    "titleForgotPassword": "Verify OTP for Password Reset",
-    "description": "Enter the 6-digit code sent to {{email}}.",
-    "required": "Please enter the OTP!",
-    "submit": "Verify OTP",
+    "titleRegister": "Verify Your Email Address",
+    "expirePrefix": "OTP will expire after",
+    "expireSuffix": "seconds",
+    "description": "Enter the verification code we sent to: {{email}}",
+    "enterPrompt": "Type your 6 digit verification code",
+    "notReceived": "Haven’t received the verification code?",
     "resend": "Resend OTP",
-    "resendCountdown": "Resend in {{seconds}}s",
-    "resendSuccessTitle": "OTP Resent",
-    "resendSuccess": "A new OTP has been sent to your email.",
-    "resendFailedTitle": "Resend Failed",
-    "resendFailed": "Failed to resend OTP. Please try again.",
-    "successTitle": "Verification Successful",
-    "successRegister": "Your account has been registered successfully!",
-    "successForgotPassword": "OTP verified! You can now reset your password.",
-    "failedTitle": "Invalid OTP",
-    "failed": "The OTP is invalid or expired. Please try again.",
-    "noEmailTitle": "Invalid Request",
-    "noEmail": "No email provided. Please start over."
+    "cancel": "Cancel",
+    "submit": "Confirm"
   },
+
   "error": {
     "forbidden": "Access Denied",
     "noPermission": "You do not have permission to access this resource.",

@@ -1,27 +1,28 @@
-// Register.tsx
-import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, Typography, theme } from "antd";
+import React, { useEffect } from "react";
+import { Form, Input, Button } from "antd";
+import {
+  UserOutlined,
+  LockOutlined,
+  EyeTwoTone,
+  EyeInvisibleOutlined,
+  MailOutlined,
+  ArrowLeftOutlined,
+} from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "../../../app/store";
+import "../../../css/button.css";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { type RootState } from "../../../app/store";
 import { registerOtpThunk } from "../AuthSlice";
-import type { AppDispatch } from "../../../app/store";
 
-const { Title, Text } = Typography;
-
-const Register = () => {
-  const dispatch: AppDispatch = useDispatch();
+export const Register = () => {
+  const isDark = useSelector((state: RootState) => state.theme.darkMode);
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const status = useSelector((state: RootState) => state.auth.status);
-
-  const {
-    token: { colorBgContainer, colorTextBase, colorPrimary },
-  } = theme.useToken();
-
   const handleRegister = async (values: {
     email: string;
     username: string;
@@ -55,133 +56,195 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Card
-        className="p-8 rounded-xl shadow-lg w-full max-w-md"
-        style={{
-          background: colorBgContainer,
-          color: colorTextBase,
-          border: `1px solid ${colorPrimary}20`,
-        }}
-      >
-        <Title
-          level={3}
-          className="text-center"
-          style={{ color: colorPrimary }}
+    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border-[#985ff6]/50 bg-[#bfbfbf]/[.6] px-[5.5rem] py-[4.25rem] w-[600px]">
+      {/* TITLE */}
+      <div className="flex flex-col justify-center items-start self-stretch">
+        <h2
+          className={`font-['Poppins'] text-5xl font-medium leading-[normal] capitalize ${
+            isDark ? "text-neutral-100" : "text-[#2c2c2c]"
+          }`}
         >
-          {t("register.title")}
-        </Title>
-        <Text
-          className="text-center block mb-6"
-          style={{ color: colorTextBase }}
-        >
-          {t("register.description")}
-        </Text>
+          Register
+        </h2>
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-[#9e9e9e] font-['Poppins'] text-sm leading-5">
+            Already have an account?
+          </span>
+          <span
+            className="text-[#e476ad] font-['Poppins'] text-sm leading-5 cursor-pointer"
+            onClick={() => navigate("/auth/login")}
+          >
+            Login
+          </span>
+        </div>
+      </div>
+
+      {/* FORM */}
+      <div className="flex flex-col items-start w-full gap-6">
         <Form
-          form={form}
           layout="vertical"
+          className="w-full"
+          form={form}
           onFinish={handleRegister}
-          autoComplete="off"
         >
+          {/* USERNAME */}
           <Form.Item
+            label={<Label text="Username" isDark={isDark} />}
             name="username"
-            label={t("register.username")}
-            rules={[
-              { required: true, message: t("register.usernameRequired") },
-            ]}
+            rules={[{ required: true, message: "Please enter your username" }]}
           >
             <Input
-              prefix={<UserOutlined />}
-              placeholder="johndoe"
               size="large"
-              className="rounded-md"
+              placeholder="Enter your username"
+              prefix={<UserOutlined className="text-white" />}
+              className="rounded-lg text-white placeholder:text-[#9e9e9e] font-['Poppins'] text-sm leading-[14px]"
+              style={{
+                background: "rgba(255,255,255,0.1)",
+                border: "1px solid #4b3b61",
+              }}
+              allowClear
             />
           </Form.Item>
+
+          {/* EMAIL */}
           <Form.Item
+            label={<Label text="Email" isDark={isDark} />}
             name="email"
-            label={t("register.email")}
             rules={[
-              {
-                required: true,
-                type: "email",
-                message: t("register.emailRequired"),
-              },
+              { required: true, message: "Please enter your email" },
+              { type: "email", message: "Invalid email format" },
             ]}
           >
             <Input
-              prefix={<MailOutlined />}
-              placeholder="you@example.com"
               size="large"
-              className="rounded-md"
+              placeholder="Enter your email"
+              prefix={<MailOutlined className="text-white" />}
+              className="rounded-lg text-white placeholder:text-[#9e9e9e] font-['Poppins'] text-sm"
+              style={{
+                background: "rgba(255,255,255,0.1)",
+                border: "1px solid #4b3b61",
+              }}
             />
           </Form.Item>
+
+          {/* PASSWORD */}
           <Form.Item
+            label={<Label text="Password" isDark={isDark} />}
             name="password"
-            label={t("register.password")}
             rules={[
-              { required: true, message: t("register.passwordRequired") },
+              { required: true, message: "Please enter your password" },
+              {
+                pattern: /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,12}$/,
+                message:
+                  "Password must be 8-12 characters, include an uppercase letter and a special character.",
+              },
             ]}
           >
             <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="••••••••"
               size="large"
-              className="rounded-md"
+              placeholder="Enter your password"
+              prefix={<LockOutlined className="text-white" />}
+              iconRender={(visible) =>
+                visible ? (
+                  <EyeTwoTone twoToneColor="#fff" />
+                ) : (
+                  <EyeInvisibleOutlined className="text-white" />
+                )
+              }
+              className="rounded-lg text-white placeholder:text-[#9e9e9e] font-['Poppins'] text-sm"
+              style={{
+                background: "rgba(255,255,255,0.1)",
+                border: "1px solid #4b3b61",
+              }}
             />
           </Form.Item>
+
+          {/* CONFIRM PASSWORD */}
           <Form.Item
+            label={<Label text="Confirm Password" isDark={isDark} />}
             name="confirmPassword"
-            label={t("register.confirmPassword")}
             dependencies={["password"]}
             rules={[
-              {
-                required: true,
-                message: t("register.confirmPasswordRequired"),
-              },
+              { required: true, message: "Please confirm your password" },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("password") === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(
-                    new Error(t("register.passwordsMismatch"))
-                  );
+                  return Promise.reject("Passwords do not match!");
                 },
               }),
             ]}
           >
             <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="••••••••"
               size="large"
-              className="rounded-md"
+              placeholder="Enter your confirm password"
+              prefix={<LockOutlined className="text-white" />}
+              iconRender={(visible) =>
+                visible ? (
+                  <EyeTwoTone twoToneColor="#fff" />
+                ) : (
+                  <EyeInvisibleOutlined className="text-white" />
+                )
+              }
+              className="rounded-lg text-white placeholder:text-[#9e9e9e] font-['Poppins'] text-sm"
+              style={{
+                background: "rgba(255,255,255,0.1)",
+                border: "1px solid #4b3b61",
+              }}
             />
           </Form.Item>
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              block
-              size="large"
-              loading={status === "loading"}
-              className="mt-4 rounded-md"
-            >
-              {t("register.submit")}
-            </Button>
+
+          {/* BUTTONS */}
+          <Form.Item className="mb-0 mt-6">
+            <div className="flex justify-between gap-4">
+              <Button
+                icon={<ArrowLeftOutlined />}
+                size="large"
+                style={{
+                  background: "rgba(255,255,255,0.1)",
+                  border: "1px solid #4b3b61",
+                }}
+                className="flex-1 h-12 text-white font-['Poppins'] text-sm rounded-lg bg-[#292929] border-none hover:opacity-80"
+                onClick={() => navigate("/auth/login")}
+              >
+                Back
+              </Button>
+              <Button
+                htmlType="submit"
+                size="large"
+                type="primary"
+                className="flex-5 text-white font-['Poppins'] text-sm font-medium leading-5 border-none"
+                style={{
+                  borderRadius: "8px",
+                  background: "var(--Foundation-indigo-indigo-500, #6610F2)",
+                  boxShadow: "0px 4px 12px 0px rgba(114, 57, 234, 0.35)",
+                }}
+              >
+                Register
+              </Button>
+            </div>
           </Form.Item>
-          <div className="flex justify-center mt-4">
-            <Button
-              type="link"
-              onClick={() => navigate("/auth/login")}
-              style={{ color: colorPrimary }}
-            >
-              {t("register.toLogin")}
-            </Button>
-          </div>
         </Form>
-      </Card>
+      </div>
     </div>
   );
 };
+
+// Helper to render label
+const Label = ({ text, isDark }: { text: string; isDark: boolean }) => (
+  <div className="flex items-start gap-1">
+    <span
+      className={`font-['Poppins'] text-sm leading-[1.125rem] ${
+        isDark ? "text-white" : "text-[#2c2c2c]"
+      }`}
+    >
+      {text}
+    </span>
+    <span className="text-[#f8285a] font-['Poppins'] text-sm leading-[1.125rem]">
+      *
+    </span>
+  </div>
+);
 
 export default Register;
