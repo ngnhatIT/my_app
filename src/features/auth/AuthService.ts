@@ -13,7 +13,7 @@ export const useAuthService = (translate: (key: string) => string) => {
   ): Promise<LoginResponseDTO> => {
     try {
       const res = await axiosInstance.post<LoginResponseDTO>(
-        "/api/login",
+        "/auth/signin",
         payload
       );
       sessionStorage.setItem("access_token", res.data.access_token);
@@ -28,7 +28,7 @@ export const useAuthService = (translate: (key: string) => string) => {
   ): Promise<RegisterResponseDTO> => {
     try {
       const res = await axiosInstance.post<RegisterResponseDTO>(
-        "/api/register",
+        "/auth/register",
         data
       );
       sessionStorage.setItem("access_token", res.data.access_token);
